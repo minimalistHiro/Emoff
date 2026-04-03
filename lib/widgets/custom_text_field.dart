@@ -13,6 +13,7 @@ class CustomTextField extends StatelessWidget {
     this.onSubmitted,
     this.validator,
     this.errorText,
+    this.prefixIcon,
     this.suffixIcon,
     this.maxLines = 1,
     this.autofocus = false,
@@ -28,6 +29,7 @@ class CustomTextField extends StatelessWidget {
   final ValueChanged<String>? onSubmitted;
   final FormFieldValidator<String>? validator;
   final String? errorText;
+  final Widget? prefixIcon;
   final Widget? suffixIcon;
   final int maxLines;
   final bool autofocus;
@@ -56,6 +58,7 @@ class CustomTextField extends StatelessWidget {
         labelText: labelText,
         hintText: hintText,
         errorText: errorText,
+        prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         labelStyle: const TextStyle(color: _textDisabled),
         hintStyle: const TextStyle(color: _textDisabled),

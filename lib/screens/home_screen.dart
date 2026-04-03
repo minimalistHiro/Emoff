@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_loading_indicator.dart';
+import 'friend_request_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -65,7 +66,12 @@ class _HomeScreenState extends State<HomeScreen> {
         IconButton(
           icon: const Icon(Icons.person_add, color: _cyan),
           onPressed: () {
-            // TODO: 友達申請画面（3-2）実装後に遷移を接続
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const FriendRequestScreen(),
+              ),
+            );
           },
         ),
         IconButton(
@@ -321,7 +327,12 @@ class _HomeScreenState extends State<HomeScreen> {
               child: CustomButton(
                 text: 'Invite Friend',
                 onPressed: () {
-                  // TODO: 友達申請画面（3-2）実装後に遷移を接続
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const FriendRequestScreen(),
+                    ),
+                  );
                 },
               ),
             ),
@@ -335,7 +346,12 @@ class _HomeScreenState extends State<HomeScreen> {
     return FloatingActionButton(
       backgroundColor: _cyan,
       onPressed: () {
-        // TODO: 友達申請画面（3-2）実装後に遷移を接続
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const FriendRequestScreen(),
+          ),
+        );
       },
       child: const Icon(Icons.add, color: _backgroundColor),
     );

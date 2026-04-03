@@ -69,7 +69,7 @@
 
 | フィールド | 型 | 必��� | 説明 |
 |-----------|-----|------|------|
-| `createdAt` | timestamp | ○ | ブロックした日時 |
+| `blockedAt` | timestamp | ○ | ブロックした日時 |
 
 **備考:**
 - ブロック時の動作: ブロック相手からのメッセージを非表示、友達リストから削除、新規チャット作成不可
@@ -133,6 +133,7 @@
 | `senderName` | string | ○ | 送信者の表示名（非正規化） |
 | `convertedText` | string | ○ | AI変換後のテキスト（受信者に表示される） |
 | `originalText` | string | - | 変換前の原文（1ヶ月後に自動削除） |
+| `tone` | string | - | 変換トーン（`neutral` / `business` / `casual` / `concise`）。デフォルト `neutral` |
 | `readBy` | array\<string\> | - | 既読者のUID配列（将来の既読機能用。当面は未使用） |
 | `createdAt` | timestamp | ○ | 送信日時 |
 

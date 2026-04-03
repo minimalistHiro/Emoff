@@ -1,6 +1,6 @@
 # 画面実装 進捗管理
 
-> 最終更新: 2026-04-03
+> 最終更新: 2026-04-04
 
 ---
 
@@ -97,7 +97,7 @@
 |---|--------|--------|------|-----------------|
 | 2-1 | ホーム画面（友達一覧） | `plans/in_progress/20260403_home_friends_screen_design.md` | [x] 完了（2026-04-03） | フェーズ1完了が前提 |
 | 2-2 | トーク一覧画面 | `plans/in_progress/20260403_talk_list_screen_design.md` | [x] 完了（2026-04-03） | フェーズ1完了が前提 |
-| 2-3 | 設定画面 | `plans/in_progress/20260403_settings_screen_design.md` | [ ] 未着手 | フェーズ1完了が前提 |
+| 2-3 | 設定画面 | `plans/completed/20260403_settings_screen_design.md` | [x] 完了（2026-04-03） | フェーズ1完了が前提 |
 
 **フェーズ完了条件:** 3タブすべてが設計書通りに実装され、画面間の遷移が正常に動作すること
 
@@ -109,9 +109,9 @@
 
 | # | 画面名 | 設計書 | 状態 | 前提・ブロッカー |
 |---|--------|--------|------|-----------------|
-| 3-1 | トークルーム画面 | `plans/in_progress/20260403_talk_room_screen_design.md` | [ ] 未着手 | フェーズ2（トーク一覧画面）完了が前提。追加設計書: 通報フロー(`20260403_talk_room_report_flow_design.md`)、Free上限(`20260403_talk_room_free_limit_design.md`)、トーン選択(`20260403_talk_room_tone_selector_design.md`)、ブロック(`20260403_talk_room_block_dialog_design.md`) |
+| 3-1 | トークルーム画面 | `plans/completed/20260403_talk_room_screen_design.md` | [x] 完了（2026-04-03） | 全機能実装完了: 基本UI + AI変換プレビュートレイ + オプションメニュー + 通報フロー + ブロック確認ダイアログ + Free上限到達UI + トーン選択UI + トーク内検索 |
 
-| 3-2 | 友達申請画面 | `plans/in_progress/20260403_friend_request_screen_design.md` | [ ] 未着手 | フェーズ2（ホーム画面）完了が前提 |
+| 3-2 | 友達申請画面 | `plans/completed/20260403_friend_request_screen_design.md` | [x] 完了（2026-04-04） | フェーズ2（ホーム画面）完了が前提 |
 
 | 3-3 | 友達申請管理画面 | `plans/in_progress/20260403_friend_request_management_screen_design.md` | [ ] 未着手 | フェーズ2（ホーム画面）完了が前提 |
 
@@ -152,10 +152,10 @@
 |---------|-------|------|------|
 | 0. 基盤構築 | 4 | 4 | 0 |
 | 1. 認証フロー | 4 | 4 | 0 |
-| 2. メイン画面 | 3 | 2 | 1 |
-| 3. コア機能画面 | 6 | 0 | 6 |
+| 2. メイン画面 | 3 | 3 | 0 |
+| 3. コア機能画面 | 6 | 2 | 4 |
 | 4. 設定サブ画面・その他 | 8 | 0 | 8 |
-| **合計** | **25** | **10** | **15** |
+| **合計** | **25** | **13** | **12** |
 
 ※ 設計が完了するたびに項目が追加される
 
@@ -177,3 +177,7 @@
 | 2026-04-03 | 1-4 パスワードリセット画面 | lib/screens/password_reset_screen.dart 作成。メールアドレス入力+送信ボタンのシンプル構成。送信完了ダイアログ付き。login_screen.dart の _navigateToPasswordReset() を実装。**フェーズ1（認証フロー）全画面の実装完了** |
 | 2026-04-03 | 2-1 ホーム画面（友達一覧） | lib/screens/home_screen.dart 作成。Circle of Clarityヒーローセクション、検索バー（カプセル型）、友達カードリスト（グレースケール→カラーアバターアニメ）、招待セクション（破線ボーダーCustomPainter）、FAB。StreamBuilderでusers/{uid}/friendsをリアルタイム監視。main_shell.dartのプレースホルダーを置き換え、ボトムナビを設計スペック準拠に更新 |
 | 2026-04-03 | 2-2 トーク一覧画面 | lib/screens/talk_list_screen.dart 作成。AppBar（ハンバーガーメニュー+EMOFFタイトル+検索+プロフィールアバター）、COMMUNICATION HUBセクションヘッダー+New Discussionボタン、トークリスト（StreamBuilderでchats.where(members,arrayContains)をリアルタイム監視）、ChatItem（StatefulWidget: 1対1は相手ユーザー情報を非同期取得、グループはMaterial Iconアバター）、未読判定（lastMessageAt vs lastReadAt）、日時フォーマット（今日/Yesterday/曜日/月日）、グレースケール20%アバター、AI Concierge Readyセクション（破線ボーダー）。main_shell.dartのプレースホルダーを置き換え |
+| 2026-04-03 | 2-3 設定画面 | lib/screens/settings_screen.dart 作成。プロフィールサマリー（StreamBuilderでusers/{uid}をリアルタイム監視、アバター96px+ユーザー名+メール+Edit Profileボタン）、CONFIGURATIONセクション（Notifications/Account Settings/Announcements）、LEGAL & PRIVACYセクション（Privacy Policy/Terms of Service）、ログアウトボタン（danger、確認ダイアログ付き→AuthService.signOut()→ログイン画面遷移）、バージョン情報。main_shell.dartの_PlaceholderScreenを置き換え・削除。**フェーズ2（メイン画面）全画面の実装完了** |
+| 2026-04-03 | 3-1 トークルーム画面（基本UI） | lib/screens/talk_room_screen.dart 作成。lib/services/chat_service.dart 作成。AppBar（戻る+相手名+肩書き+検索+メニュー）、メッセージキャンバス（StreamBuilderでchats/{chatId}/messagesリアルタイム監視、日付インジケーター、送受信バブル、NEUTRALIZEDバッジ）、インプットドック（テキスト入力+CONFIRMボタン）。talk_list_screen.dartからの遷移を接続 |
+| 2026-04-03 | 3-1 トークルーム画面（全機能） | AI変換プレビュートレイ（CONFIRM→スライドアップトレイ、Original/Emoff-ed 2カラム比較、SEND NEUTRALIZED/REFINE AIボタン、MVPはモック変換）。オプションメニュー（通報/ブロック/グループ管理）。通報フロー（メニューからのユーザー通報+メッセージ長押しからのメッセージ通報、理由4択+補足入力、Firestore reports保存）。ブロック確認ダイアログ（3ステップ確認、blocked_usersサブコレクション保存、成功時トーク一覧へ戻る）。Free上限到達UI（残数カウンター常時表示、残り5通警告バナー、上限到達ダイアログ、インプットドックロック、SharedPreferences管理）。トーン選択UI（4トーン、チャットごとにSharedPreferences保存、Pro以上のみチップ表示、バッジ/プレビューヘッダー連動）。トーク内検索（検索モードAppBar、クライアントサイドフィルター）。**フェーズ3-1完了** |
+| 2026-04-04 | 3-2 友達申請画面 | lib/screens/friend_request_screen.dart 作成。@プレフィックス付きCustomTextField+円形検索ボタン、検索結果4状態切り替え（初期/検索中/発見/未発見）、ボタン5パターン分岐（申請可能/友達済み/申請済み/申請受信中/自分自身）、ブロック中ユーザーは未発見表示、確認ダイアログ→申請送信→成功ダイアログ、自分のID表示+クリップボードコピー。CustomTextFieldにprefixIconパラメータ追加。home_screen.dartの3箇所（person_add/Invite Friend/FAB）に遷移接続 |

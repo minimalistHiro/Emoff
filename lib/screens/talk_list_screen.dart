@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_loading_indicator.dart';
+import 'talk_room_screen.dart';
 
 class TalkListScreen extends StatefulWidget {
   const TalkListScreen({super.key});
@@ -222,7 +223,19 @@ class _TalkListScreenState extends State<TalkListScreen> {
                           data: data,
                           currentUid: uid,
                           onTap: () {
-                            // TODO: トークルーム画面（3-1）実装後に遷移を接続
+                            final type =
+                                data['type'] as String? ?? 'direct';
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => TalkRoomScreen(
+                                  chatId: chatId,
+                                  chatType: type,
+                                  groupName: type == 'group'
+                                      ? data['groupName'] as String?
+                                      : null,
+                                ),
+                              ),
+                            );
                           },
                         ),
                       );
