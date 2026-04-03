@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "413054625629",
+    "project_id": "emoff-e82a4",
+    "storage_bucket": "emoff-e82a4.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:413054625629:android:80e6aafb392dc7c84aeab4",
+        "android_client_info": {
+          "package_name": "com.example.emoff"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBk9WpvP4aBrH8xcEjlSJGwEkyqg23_2wY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
