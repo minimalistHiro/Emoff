@@ -9,6 +9,7 @@ import '../widgets/custom_dialog.dart';
 import '../widgets/custom_dialog_helper.dart';
 import '../widgets/custom_loading_indicator.dart';
 import '../widgets/custom_text_field.dart';
+import 'group_management_screen.dart';
 
 class TalkRoomScreen extends StatefulWidget {
   const TalkRoomScreen({
@@ -561,7 +562,13 @@ class _TalkRoomScreenState extends State<TalkRoomScreen>
                   color: _textPrimary,
                   onTap: () {
                     Navigator.pop(context);
-                    // TODO: グループ管理画面への遷移
+                    Navigator.of(this.context).push(
+                      MaterialPageRoute(
+                        builder: (_) => GroupManagementScreen(
+                          chatId: widget.chatId,
+                        ),
+                      ),
+                    );
                   },
                 ),
               // 1対1チャットのみ: 通報・ブロック

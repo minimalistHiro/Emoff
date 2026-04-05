@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomTextField extends StatelessWidget {
   const CustomTextField({
@@ -16,7 +17,10 @@ class CustomTextField extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
     this.maxLines = 1,
+    this.minLines,
     this.autofocus = false,
+    this.focusNode,
+    this.inputFormatters,
   });
 
   final TextEditingController? controller;
@@ -32,7 +36,10 @@ class CustomTextField extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
   final int maxLines;
+  final int? minLines;
   final bool autofocus;
+  final FocusNode? focusNode;
+  final List<TextInputFormatter>? inputFormatters;
 
   static const _background = Color(0xFF242424);
   static const _cyan = Color(0xFF00D4FF);
@@ -51,7 +58,10 @@ class CustomTextField extends StatelessWidget {
       onFieldSubmitted: onSubmitted,
       validator: validator,
       maxLines: maxLines,
+      minLines: minLines,
       autofocus: autofocus,
+      focusNode: focusNode,
+      inputFormatters: inputFormatters,
       style: const TextStyle(color: _textPrimary, fontSize: 16),
       cursorColor: _cyan,
       decoration: InputDecoration(

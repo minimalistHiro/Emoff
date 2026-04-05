@@ -1,6 +1,6 @@
 # APP_SCREENS.md
 
-> 最終更新: 2026-04-04（友達申請画面実装完了）
+> 最終更新: 2026-04-05（プロフィール設定画面実装完了）
 
 **このファイルには実装済みの画面・コンポーネントのみを記載する。** 未実装の画面は IMPLEMENTATION_PROGRESS.md / DESIGN_PROGRESS.md で管理する。
 
@@ -137,7 +137,7 @@
   - FAB: シアン背景（`#00D4FF`）の+ボタン（右下固定）→ 友達申請画面へ遷移
   - データ取得: `users/{uid}/friends` サブコレクションをStreamBuilderでリアルタイム監視
   - iPhone SE対応: CustomScrollView + SliverList によるスクロール構成
-- **遷移先**: 友達プロフィール画面（未実装）、友達申請画面（実装済み）、サイドドロワー（未実装）
+- **遷移先**: 友達プロフィール画面（実装済み）、友達申請画面（実装済み）、友達申請管理画面（実装済み）、サイドドロワー（未実装）
 
 ### トーク一覧画面（Communication Hub）
 - **概要**: 過去のトーク履歴を新着順に一覧表示する画面。個別チャットとグループチャットを統合的に表示
@@ -155,7 +155,7 @@
   - Empty State: チャットが0件の場合、AI Conciergeセクションを画面中央に表示
   - データ取得: `chats` コレクションを `where('members', arrayContains: uid).orderBy('lastMessageAt', descending: true)` で StreamBuilder リアルタイム監視
   - iPhone SE対応: CustomScrollView + SliverList によるスクロール構成
-- **遷移先**: トークルーム画面（実装済み）、新規トーク作成（未実装）、プロフィール設定画面（未実装）、サイドドロワー（未実装）
+- **遷移先**: トークルーム画面（実装済み）、グループ作成画面（実装済み、Freeプランはアップグレード促進ダイアログ）、プロフィール設定画面（未実装）、サイドドロワー（未実装）
 
 ### 設定画面
 - **概要**: 各種設定項目の一覧を表示する画面。上部にユーザープロフィールのサマリー、中央に設定項目リスト、下部にログアウト・バージョン情報を配置
@@ -170,7 +170,7 @@
   - ログアウトボタン: CustomButton（danger, 高さ44px）+「Logout of Session」、確認ダイアログ（`showCustomConfirmDialog`）→ `AuthService.signOut()` → ログイン画面へ `pushAndRemoveUntil`
   - バージョン情報: 「VERSION 1.0.0 • EMOFF STOIC」（`#555555`, 10px, レタースペーシング広め）
   - iPhone SE対応: `SingleChildScrollView` によるスクロール構成
-- **遷移先**: プロフィール設定画面（未実装）、通知設定画面（未実装）、アカウント設定画面（未実装）、お知らせ画面（未実装）、プライバシーポリシー画面（未実装）、利用規約画面（未実装）、ログイン画面（ログアウト時）
+- **遷移先**: プロフィール設定画面（実装済み）、通知設定画面（未実装）、アカウント設定画面（未実装）、お知らせ画面（未実装）、プライバシーポリシー画面（未実装）、利用規約画面（未実装）、ログイン画面（ログアウト時）
 
 ### トークルーム画面
 - **概要**: 個別チャット画面。メッセージの送受信をリアルタイムで行う。Emoffの核心機能であるAIトーン中立化がこの画面で動作する
@@ -194,6 +194,7 @@
   - トーン選択UI: 4トーン（ニュートラル/ビジネス敬語/カジュアル/簡潔）、チャットごとにSharedPreferences保存、Pro以上のみチップ表示
   - トーク内検索: 検索モードAppBar、クライアントサイドフィルター
 - **遷移元**: トーク一覧画面（チャットアイテムタップ）
+- **遷移先**: グループ管理画面（実装済み、グループチャットのメニュー「グループ管理」）
 
 ### 友達申請画面（Find & Connect）
 - **概要**: ユーザーIDで他のユーザーを検索し、友達申請を送信する画面。ホーム画面のperson_addアイコン・Invite Friendボタン・FABから遷移
@@ -213,7 +214,107 @@
   - データ取得: `users`コレクション `where('userId', '==', input)` で検索、`friends`サブコレクション・`friend_requests`で関係性判定
   - iPhone SE対応: `SingleChildScrollView` + `Column` + 下部固定セクション
 - **遷移元**: ホーム画面（person_addアイコン・Invite Friendボタン・FAB）
-- **遷移先**: 友達申請管理画面（未実装、「申請が届いています」ボタン）
+- **遷移先**: 友達申請管理画面（実装済み、「申請が届いています」ボタン）
+
+### 友達申請管理画面（Pending Connections）
+- **概要**: 受信した友達申請の一覧を表示し、承認・拒否を行う画面。リアルタイムリスナーで申請の追加・変更を即時反映する
+- **ファイル**: `lib/screens/friend_request_management_screen.dart`
+- **設計書**: `plans/completed/20260403_friend_request_management_screen_design.md`
+- **主な仕様**:
+  - CustomAppBar（戻るボタン付き、「REQUESTS」タイトル、大文字・セミボールド・レタースペーシング広め）+ 未処理件数バッジ（シアン円形、StreamBuilderでリアルタイム更新）
+  - セクションヘッダー: 「受信した友達申請」セミボールド16px + 「N件の申請」右端（`#A0A0A0`, 14px）
+  - 申請カード: `#1A1A1A`背景・角丸16px・パディング16px。アバター48×48px + 申請者名（ボールド16px）+ @userId（13px、`users`コレクションから非同期取得+キャッシュ）+ 相対日時（12px, `#555555`）+ 承認ボタン（CustomButton primary, 36px×96px）+ 拒否ボタン（CustomButton secondary, 36px×96px）
+  - 承認フロー: 確認ダイアログ（`showCustomConfirmDialog`「〇〇さんの友達申請を承認しますか？」）→ バッチ書き込み（friend_requests.status更新 + 双方向friends作成）→ カードフェードアウト → 成功ダイアログ「〇〇さんと友達になりました」
+  - 拒否フロー: 確認ダイアログ → friend_requests.status更新 → カードフェードアウト（ダイアログなし、静かに処理）
+  - 二重タップ防止: 処理中のボタンを即座に非活性化（ローディング状態）
+  - 空状態: `mail_outline`アイコン64px + 「友達申請はありません」+ 「新しい申請が届くとここに表示されます」（画面中央）
+  - 相対日時表示: たった今 / N分前 / N時間前 / N日前 / MM/DD形式（7日以上）
+  - データ取得: `friend_requests` コレクションを `where('toUid', '==', myUid).where('status', '==', 'pending').orderBy('createdAt', descending: true)` で StreamBuilder リアルタイム監視
+  - iPhone SE対応: `ListView.builder` によるスクロール構成
+- **遷移元**: ホーム画面（AppBarのmail_outlineバッジ付きアイコン）、友達申請画面（「申請が届いています」ボタン）
+
+### 友達プロフィール画面（Peer Profile）
+- **概要**: 友達の背景画像・アイコン・アカウント情報を表示するプロフィール画面。LINEのプロフィール画面に相当し、下部にトークボタンを配置。ホーム画面の友達リストからカードをタップして遷移
+- **ファイル**: `lib/screens/friend_profile_screen.dart`
+- **設計書**: `plans/completed/20260403_friend_profile_screen_design.md`
+- **主な仕様**:
+  - 透過AppBar: `extendBodyBehindAppBar: true`。戻るアイコン + メニューアイコン（共にドロップシャドウ付き白色、背景画像上の視認性確保）
+  - ポップアップメニュー: 「ブロック」（`block`アイコン、`#FF4D4D`赤テキスト）/ 「通報」（`flag`アイコン、`#A0A0A0`、準備中ダイアログ）。`#242424`背景、角丸12px
+  - 背景画像エリア: 全幅240px、`users.backgroundUrl` を `BoxFit.cover` で表示。未設定時はグラデーション（`#1A1A1A` → `#242424`）。下部に黒半透明グラデーションオーバーレイ
+  - プロフィールアイコン: 96×96px円形、白ボーダー2px、ドロップシャドウ。背景画像の下端から半分はみ出す配置（Stack + Positioned）。未設定時は`person`アイコン + `#1A1A1A`背景
+  - ユーザー情報: ユーザー名（ボールド24px、中央寄せ）+ @userId（14px、`#A0A0A0`）+ 区切り線（`#242424`、bio存在時のみ）+ 自己紹介文（14px、`#A0A0A0`、最大5行、中央寄せ）。左右パディング32px
+  - トークボタン: `bottomNavigationBar` に固定配置、CustomButton primary、`chat_bubble_outline`アイコン付き。左右マージン24px
+  - トーク開始ロジック: `friends/{friendUid}.chatId` が存在すれば既存チャットを開く。なければ新規 `chats` ドキュメント作成（type: direct）+ 両方の `friends` サブコレクションに `chatId` を書き戻し → TalkRoomScreen 遷移
+  - ブロック確認ダイアログ: `block`アイコン48px（`#FF4D4D`）+ 影響3点箇条書き（メッセージ不着・友達リスト相互削除・相手通知なし）+ キャンセル/ブロック横並びボタン
+  - ブロック処理: `blocked_users/{friendUid}` に `blockedAt` ドキュメント作成 + 両者の `friends` サブコレクションから相互削除（バッチ書き込み）→ ホーム画面に pop
+  - ユーザー不存在時: エラーダイアログ「このユーザーは存在しません」→ ホーム画面に pop
+  - データ取得: `users/{friendUid}` からワンショット取得
+- **遷移元**: ホーム画面（友達カードタップ）
+- **遷移先**: トークルーム画面（トークボタン）、ホーム画面（ブロック成功時 pop）
+
+### グループ作成画面（Assemble Your Circle）
+- **概要**: 友達リストからメンバーを選択し、新しいグループチャットを作成する画面。トーク一覧画面の「New Discussion」ボタンから遷移。Freeプランユーザーはアップグレード促進ダイアログが表示されこの画面には到達しない
+- **ファイル**: `lib/screens/group_creation_screen.dart`
+- **設計書**: `plans/completed/20260403_group_creation_screen_design.md`
+- **主な仕様**:
+  - Freeプラン制御: `users/{uid}.plan`フィールドで判定（未設定はfree扱い）。Freeユーザーにはトーク一覧画面でアップグレード促進ダイアログ（CustomDialog: `groups`アイコン+説明+プランを見る/あとでボタン）を表示
+  - CustomAppBar（戻るボタン付き、「New Group」タイトル、セミボールド）+ 右端「Create」テキストボタン（有効時シアン/無効時`#555555`）
+  - グループ情報セクション: `#1A1A1A`背景、80×80pxグループアイコン（`groups`アイコン+カメラオーバーレイ、画像選択はTODO）+ グループ名入力（CustomTextField、50文字上限カウンター付き）。横並びRow
+  - 選択済みメンバープレビュー: 「MEMBERS」ラベル（大文字・レタースペーシング広め）+ 選択数シアン表示 + 横スクロールチップリスト（32×32pxアバター+名前+`close`削除ボタン、`#242424`背景カプセル型）。メンバー0人時は非表示
+  - 友達検索バー: カプセル型（StadiumBorder）、`search`アイコン付き、`#1A1A1A`背景、名前・IDでリアルタイムフィルタリング
+  - 友達リスト: `users/{uid}/friends`サブコレクションをStreamBuilderでリアルタイム監視。チェック式選択/解除（アイテム全体タップ可）。48×48pxアバター（未選択: グレースケール20%、選択: カラー化）+名前+@userId+チェックマーク（選択: シアン塗りつぶし+白チェック、未選択: `#555555`枠線のみ）。選択済みは`#1A1A1A`ハイライト背景
+  - Empty State: `person_add`アイコン48px + 「友達を追加してからグループを作成しましょう」+ 「友達を追加」ボタン（CustomButton primary, 200px幅）→ 友達申請画面遷移
+  - 固定フッター: `#0D0D0D`背景+上部1px区切り線。「N人のメンバーを選択中」テキスト + 「グループを作成」ボタン（CustomButton primary、横幅いっぱい）。有効条件: グループ名1文字以上 AND メンバー1人以上
+  - 破棄確認ダイアログ: 入力中に戻るボタンで表示。「作成を中止しますか？」+「入力した内容は保存されません。」+ 中止する（danger）/続ける（secondary）
+  - グループ作成処理: Firestore `chats`にドキュメント作成（type:group, members, groupName, createdBy, timestamps）→ 成功時トークルーム画面へ`pushReplacement`遷移
+  - `PopScope`で戻るジェスチャー制御（入力中は破棄確認ダイアログ表示）
+  - iPhone SE対応: `CustomScrollView` + `SliverList` によるスクロール構成
+- **遷移元**: トーク一覧画面（New Discussionボタン、Pro以上のユーザーのみ）
+- **遷移先**: トークルーム画面（グループ作成成功時、pushReplacement）、友達申請画面（Empty State「友達を追加」ボタン）
+
+### グループ管理画面（Circle Settings）
+- **概要**: グループチャットの情報確認・編集・メンバー管理を行う画面。トークルーム画面の`more_vert`メニューから「グループ管理」を選択して遷移。グループ作成者（`createdBy`）と一般メンバーで操作権限が異なる
+- **ファイル**: `lib/screens/group_management_screen.dart`
+- **設計書**: `plans/completed/20260403_group_management_screen_design.md`
+- **主な仕様**:
+  - 権限モデル: 作成者のみ→グループ名編集・アイコン変更・メンバー削除。全員→メンバー追加・グループ退出
+  - CustomAppBar（戻るボタン付き、「Group Settings」タイトル、セミボールド）
+  - グループ情報セクション: 96×96pxグループアイコン（`groups`アイコン、作成者のみカメラオーバーレイ`#00D4FF`背景）+グループ名（ボールド22px、作成者のみ`edit`アイコン16px付き）+メンバー数（「N members」形式、14px、`#A0A0A0`）。中央寄せColumn、上下パディング32/24px、下部1px区切り線
+  - グループ名インライン編集（作成者のみ）: editアイコンタップでCustomTextField+check/closeアイコン切替。50文字上限カウンター付き。確定→Firestore `groupName`更新、キャンセル→変更破棄
+  - 画像選択ボトムシート（作成者のみ）: 「写真を撮る」/「ギャラリーから選択」/「キャンセル」。`#242424`背景、角丸上部24px、ハンドルバー付き（MVPはTODO）
+  - MEMBERSセクション: 「MEMBERS」大文字ラベル（12px、レタースペーシング広め）+ メンバー数シアン表示
+  - メンバー追加ボタン: `person_add`アイコン24px+`#242424`背景48px円形+「メンバーを追加」シアンテキスト。最上部に配置
+  - メンバーリスト: 48×48pxアバター（グレースケール20%）+ 名前（ボールド16px）+ @userId（13px）+ OWNERバッジ（`#00D4FF`背景・黒テキスト・カプセル型9px）+ YOUバッジ（`#242424`背景・`#A0A0A0`テキスト）+ 削除ボタン（`remove_circle_outline`、`#FF4D4D`、作成者のみ表示・自分自身には非表示）。ソート順: 作成者→自分→名前昇順
+  - メンバー追加ボトムシート: DraggableScrollableSheet（70%/90%）、ハンドルバー+「メンバーを追加」タイトル+カプセル型検索バー+友達リスト（StreamBuilder）。既存メンバーはグレーアウト（50%グレースケール+「参加中」ラベル+チェックマーク非表示+タップ不可）。新規メンバーはチェック式選択（グループ作成画面と同一仕様）。固定フッター「追加する (N)」ボタン（CustomButton primary）
+  - メンバー削除確認ダイアログ: 「メンバーを削除しますか？」+ 「{名前}をこのグループから削除します。」+ 削除する（danger）/キャンセル（secondary）。Firestore `members`配列からUID除去
+  - グループ退出確認ダイアログ: 「グループを退出しますか？」+ 作成者向け警告文（編集・削除権限喪失の明示）/ 一般メンバー向け文言（再参加に招待が必要）。退出する（danger）/キャンセル（secondary）。Firestore `members`配列から自分のUID除去→`popUntil`でメインシェルへ遷移
+  - メンバータップ: 友達のみ友達プロフィール画面へ遷移。自分自身・非友達はタップ不可
+  - データ取得: `chats/{chatId}`をStreamBuilderでリアルタイム監視（メンバー追加/削除/名前変更を即時反映）。メンバー情報は`users`コレクションからFutureBuilderで取得+キャッシュ。友達判定は`users/{uid}/friends`から初期ロード
+- **遷移元**: トークルーム画面（グループチャットのメニュー「グループ管理」）
+- **遷移先**: 友達プロフィール画面（メンバータップ、友達のみ）、メインシェル（グループ退出時、popUntil）
+
+### プロフィール設定画面（Edit Profile）
+- **概要**: 自分のプロフィール（背景画像・アイコン・名前・ユーザーID・自己紹介文）を編集する画面。設定画面の「Edit Profile」ボタンから遷移。友達プロフィール画面（閲覧専用）と視覚的に対応しつつ、各要素が編集可能
+- **ファイル**: `lib/screens/profile_settings_screen.dart`
+- **設計書**: `plans/completed/20260403_profile_settings_screen_design.md`
+- **主な仕様**:
+  - CustomAppBar（戻るボタン付き、「Edit Profile」タイトル、ボールド20px）
+  - 背景画像エリア: 全幅200px。`users.backgroundUrl`を`BoxFit.cover`で表示。未設定時はグラデーション（`#1A1A1A`→`#242424`）。常時黒半透明オーバーレイ（opacity:0.3）+`camera_alt`アイコン32px。タップで画像選択ボトムシート表示
+  - プロフィールアイコン: 96×96px円形、白ボーダー2px、ドロップシャドウ。背景画像下端から半分はみ出す配置（Stack+Positioned）。右下にシアンカメラバッジ（24×24px、`#00D4FF`背景、`camera_alt`14px）。タップで画像選択ボトムシート表示
+  - 画像選択ボトムシート: ハンドルバー+タイトル（「プロフィール画像を選択」/「背景画像を選択」）+3項目（カメラで撮影/ライブラリから選択/画像を削除）。`#242424`背景、上部角丸16px。「画像を削除」は既存画像がある場合のみ表示（`#FF4D4D`テキスト+アイコン）
+  - 画像クロップ: `image_cropper`パッケージ使用。アイコン:1:1アスペクト比、背景:16:9アスペクト比。ツールバー色`#0D0D0D`+`#00D4FF`
+  - 入力フォーム（左右パディング24px、フィールド間隔20px）:
+    - Name: CustomTextField、20文字上限（LengthLimitingTextInputFormatter）、文字数カウンター、空欄バリデーション。`users/{uid}.name`
+    - User ID: CustomTextField、`@`プレフィックス（prefixIcon）、20文字上限、半角英数字+アンダースコアのみ（FilteringTextInputFormatter）、自動小文字変換（_LowercaseTextFormatter）、3文字以上バリデーション、一意性チェック（フォーカスアウト時にFirestore照会）。`users/{uid}.userId`
+    - Bio: CustomTextField、150文字上限、minLines:2/maxLines:4、文字数カウンター、「保存時にAIが文章を整えます」ヒントテキスト（`#555555`）。`users/{uid}.bio`
+  - Saveボタン: CustomButton primary、変更なし/バリデーションエラー/一意性チェック中は非活性
+  - AI変換プレビューダイアログ: Bio変更時にSaveタップで表示。変換前テキスト（`#A0A0A0`、`#1A1A1A`背景）→矢印→変換後テキスト（`#FFFFFF`、`#1A1A1A`背景、左シアンボーダー2px）。やり直す（secondary）/確認（primary）。MVPはモック変換
+  - 保存処理: Firebase Storageに画像アップロード（`users/{uid}/icon.jpg`, `users/{uid}/background.jpg`）→ Firestore `users/{uid}` 更新（name, userId, bio, iconUrl, backgroundUrl, updatedAt）→ 完了ダイアログ → 設定画面にpop
+  - 破棄確認ダイアログ: 未保存変更がある状態で戻るボタンタップ時。「変更を破棄しますか？」+「編集中の内容は保存されません」+キャンセル（secondary）/破棄（danger）。PopScope連動（canPop動的制御）
+  - 画像削除: Storageファイル削除 + Firestoreフィールドをnullに更新
+  - エラーハンドリング: `toUserFriendlyError()`変換、画像アップロード失敗時はテキスト変更も保存しない（アトミック）
+- **遷移元**: 設定画面（Edit Profileボタン）
+- **遷移先**: 設定画面（保存完了後 / 破棄後 pop）
 
 ### ボトムナビゲーション（メインシェル）
 - **概要**: 認証後のメイン画面。ホーム・トーク・設定の3タブをボトムナビゲーションで切り替える
@@ -265,6 +366,6 @@
 | `CustomButton` | `lib/widgets/custom_button.dart` | アプリ内ボタン。primary / secondary / danger の3バリエーション。`icon`（トレーリングアイコン）・`height`（高さ指定）対応 |
 | `CustomDialog` | `lib/widgets/custom_dialog.dart` | ダイアログUI。Flutter標準の `AlertDialog` の代替 |
 | `CustomDialogHelper` | `lib/widgets/custom_dialog_helper.dart` | `showCustomDialog` / `showCustomConfirmDialog` / `toUserFriendlyError` |
-| `CustomTextField` | `lib/widgets/custom_text_field.dart` | テキスト入力。角丸16px・ダーク背景・シアン枠線。`prefixIcon`・`suffixIcon` 対応 |
+| `CustomTextField` | `lib/widgets/custom_text_field.dart` | テキスト入力。角丸16px・ダーク背景・シアン枠線。`prefixIcon`・`suffixIcon`・`focusNode`・`inputFormatters`・`minLines` 対応 |
 | `CustomAppBar` | `lib/widgets/custom_app_bar.dart` | AppBar。黒背景・シアンアクセント |
 | `CustomLoadingIndicator` | `lib/widgets/custom_loading_indicator.dart` | ローディングスピナー。シアン色の回転インジケーター |

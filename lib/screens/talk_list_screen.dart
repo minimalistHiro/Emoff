@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/custom_app_bar.dart';
+import '../widgets/custom_button.dart';
+import '../widgets/custom_dialog.dart';
 import '../widgets/custom_loading_indicator.dart';
 import 'talk_room_screen.dart';
+import 'group_creation_screen.dart';
 
 class TalkListScreen extends StatefulWidget {
   const TalkListScreen({super.key});
@@ -289,9 +292,7 @@ class _TalkListScreenState extends State<TalkListScreen> {
             ),
           ),
           GestureDetector(
-            onTap: () {
-              // TODO: 新規トーク作成（友達選択 or グループ作成）の実装後に接続
-            },
+            onTap: _onNewDiscussion,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
@@ -324,6 +325,72 @@ class _TalkListScreenState extends State<TalkListScreen> {
         ],
       ),
     );
+  }
+
+  /// New Discussionボタンタップ時の処理
+  Future<void> _onNewDiscussion() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    // ユーザーのプラン情報を取得
+    final userDoc =
+        await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final plan = userDoc.data()?['plan'] as String? ?? 'free';
+
+    if (!mounted) return;
+
+    if (plan == 'free') {
+      // Freeプランユーザー → アップグレード促進ダイアログ
+      showDialog<void>(
+        context: context,
+        builder: (dialogContext) => CustomDialog(
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.groups, size: 48, color: _cyan),
+              SizedBox(height: 16),
+              Text(
+                'グループチャットはProプランの機能です',
+                style: TextStyle(
+                  color: _textPrimary,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 12),
+              Text(
+                'Personal Proプラン（¥300/月）にアップグレードすると、グループチャット・変換トーン選択などの機能が利用できます。',
+                style: TextStyle(color: _textSecondary, fontSize: 14),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+          actions: [
+            CustomButton(
+              text: 'プランを見る',
+              onPressed: () {
+                Navigator.of(dialogContext).pop();
+                // TODO: サブスクリプション画面（4-8）実装後に遷移を接続
+              },
+            ),
+            const SizedBox(height: 8),
+            CustomButton(
+              text: 'あとで',
+              variant: CustomButtonVariant.secondary,
+              onPressed: () => Navigator.of(dialogContext).pop(),
+            ),
+          ],
+        ),
+      );
+    } else {
+      // Pro以上 → グループ作成画面へ遷移
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => const GroupCreationScreen(),
+        ),
+      );
+    }
   }
 
   Widget _buildAiConciergeSection() {

@@ -5,6 +5,8 @@ import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_loading_indicator.dart';
 import 'friend_request_screen.dart';
+import 'friend_request_management_screen.dart';
+import 'friend_profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -63,6 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       actions: [
+        // 友達申請管理ボタン（バッジ付き）
+        _buildRequestsBadgeButton(),
         IconButton(
           icon: const Icon(Icons.person_add, color: _cyan),
           onPressed: () {
@@ -123,6 +127,63 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
       ],
+    );
+  }
+
+  Widget _buildRequestsBadgeButton() {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return const SizedBox.shrink();
+
+    return StreamBuilder<QuerySnapshot>(
+      stream: FirebaseFirestore.instance
+          .collection('friend_requests')
+          .where('toUid', isEqualTo: uid)
+          .where('status', isEqualTo: 'pending')
+          .snapshots(),
+      builder: (context, snapshot) {
+        final count = snapshot.data?.docs.length ?? 0;
+        return IconButton(
+          icon: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              const Icon(Icons.mail_outline, color: _cyan),
+              if (count > 0)
+                Positioned(
+                  right: -6,
+                  top: -4,
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: const BoxDecoration(
+                      color: _cyan,
+                      shape: BoxShape.circle,
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 16,
+                      minHeight: 16,
+                    ),
+                    child: Text(
+                      '$count',
+                      style: const TextStyle(
+                        color: Color(0xFF0D0D0D),
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const FriendRequestManagementScreen(),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -192,7 +253,13 @@ class _HomeScreenState extends State<HomeScreen> {
                           name: data['name'] as String? ?? '',
                           iconUrl: data['iconUrl'] as String?,
                           onTap: () {
-                            // TODO: 友達プロフィール画面（3-4）実装後に遷移を接続
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => FriendProfileScreen(
+                                  friendUid: friendUid,
+                                ),
+                              ),
+                            );
                           },
                         ),
                       );

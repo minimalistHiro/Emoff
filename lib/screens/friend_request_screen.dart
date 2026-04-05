@@ -7,6 +7,7 @@ import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_loading_indicator.dart';
 import '../widgets/custom_dialog_helper.dart';
+import 'friend_request_management_screen.dart';
 
 class FriendRequestScreen extends StatefulWidget {
   const FriendRequestScreen({super.key});
@@ -338,8 +339,12 @@ class _FriendRequestScreenState extends State<FriendRequestScreen> {
         return CustomButton(
           text: '申請が届いています',
           onPressed: () {
-            // 友達申請管理画面へ遷移
-            // TODO: 友達申請管理画面（3-3）実装後に遷移を接続
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => const FriendRequestManagementScreen(),
+              ),
+            );
           },
         );
       case _ButtonState.isSelf:

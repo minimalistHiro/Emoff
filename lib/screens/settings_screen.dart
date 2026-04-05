@@ -6,6 +6,7 @@ import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_dialog_helper.dart';
 import 'login_screen.dart';
+import 'profile_settings_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -165,7 +166,11 @@ class SettingsScreen extends StatelessWidget {
               // Edit Profile button
               GestureDetector(
                 onTap: () {
-                  // TODO: フェーズ4でプロフィール設定画面へ遷移
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const ProfileSettingsScreen(),
+                    ),
+                  );
                 },
                 child: Container(
                   padding: const EdgeInsets.symmetric(

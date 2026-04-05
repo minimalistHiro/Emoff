@@ -1,6 +1,6 @@
 # 画面実装 進捗管理
 
-> 最終更新: 2026-04-04
+> 最終更新: 2026-04-05
 
 ---
 
@@ -113,13 +113,13 @@
 
 | 3-2 | 友達申請画面 | `plans/completed/20260403_friend_request_screen_design.md` | [x] 完了（2026-04-04） | フェーズ2（ホーム画面）完了が前提 |
 
-| 3-3 | 友達申請管理画面 | `plans/in_progress/20260403_friend_request_management_screen_design.md` | [ ] 未着手 | フェーズ2（ホーム画面）完了が前提 |
+| 3-3 | 友達申請管理画面 | `plans/completed/20260403_friend_request_management_screen_design.md` | [x] 完了（2026-04-04） | フェーズ2（ホーム画面）完了が前提 |
 
-| 3-4 | 友達プロフィール画面 + ブロック確認ダイアログ | `plans/in_progress/20260403_friend_profile_screen_design.md` | [ ] 未着手 | フェーズ2（ホーム画面）完了が前提 |
+| 3-4 | 友達プロフィール画面 + ブロック確認ダイアログ | `plans/completed/20260403_friend_profile_screen_design.md` | [x] 完了（2026-04-04） | フェーズ2（ホーム画面）完了が前提 |
 
-| 3-5 | グループ作成画面 | `plans/in_progress/20260403_group_creation_screen_design.md` | [ ] 未着手 | フェーズ2（トーク一覧画面）完了が前提 |
+| 3-5 | グループ作成画面 | `plans/completed/20260403_group_creation_screen_design.md` | [x] 完了（2026-04-04） | フェーズ2（トーク一覧画面）完了が前提 |
 
-| 3-6 | グループ管理画面 | `plans/in_progress/20260403_group_management_screen_design.md` | [ ] 未着手 | 3-5（グループ作成画面）完了が前提 |
+| 3-6 | グループ管理画面 | `plans/completed/20260403_group_management_screen_design.md` | [x] 完了（2026-04-05） | 3-5（グループ作成画面）完了が前提 |
 
 **フェーズ完了条件:** メイン画面から遷移できる全画面が実装され、AI変換フローが動作すること
 
@@ -131,7 +131,7 @@
 
 | # | 画面名 | 設計書 | 状態 | 前提・ブロッカー |
 |---|--------|--------|------|-----------------|
-| 4-1 | プロフィール設定画面 | `plans/in_progress/20260403_profile_settings_screen_design.md` | [ ] 未着手 | フェーズ2（設定画面）完了が前提 |
+| 4-1 | プロフィール設定画面 | `plans/completed/20260403_profile_settings_screen_design.md` | [x] 完了（2026-04-05） | フェーズ2（設定画面）完了が前提 |
 | 4-2 | アカウント設定画面 | `plans/in_progress/20260403_account_settings_screen_design.md` | [ ] 未着手 | フェーズ2（設定画面）完了が前提 |
 | 4-3 | 通知設定画面 | `plans/in_progress/20260403_notification_settings_screen_design.md` | [ ] 未着手 | フェーズ2（設定画面）完了が前提 |
 | 4-4 | お知らせ画面 | `plans/in_progress/20260403_announcements_screen_design.md` | [ ] 未着手 | フェーズ2（設定画面）完了が前提 |
@@ -153,9 +153,9 @@
 | 0. 基盤構築 | 4 | 4 | 0 |
 | 1. 認証フロー | 4 | 4 | 0 |
 | 2. メイン画面 | 3 | 3 | 0 |
-| 3. コア機能画面 | 6 | 2 | 4 |
-| 4. 設定サブ画面・その他 | 8 | 0 | 8 |
-| **合計** | **25** | **13** | **12** |
+| 3. コア機能画面 | 6 | 6 | 0 |
+| 4. 設定サブ画面・その他 | 8 | 1 | 7 |
+| **合計** | **25** | **18** | **7** |
 
 ※ 設計が完了するたびに項目が追加される
 
@@ -181,3 +181,8 @@
 | 2026-04-03 | 3-1 トークルーム画面（基本UI） | lib/screens/talk_room_screen.dart 作成。lib/services/chat_service.dart 作成。AppBar（戻る+相手名+肩書き+検索+メニュー）、メッセージキャンバス（StreamBuilderでchats/{chatId}/messagesリアルタイム監視、日付インジケーター、送受信バブル、NEUTRALIZEDバッジ）、インプットドック（テキスト入力+CONFIRMボタン）。talk_list_screen.dartからの遷移を接続 |
 | 2026-04-03 | 3-1 トークルーム画面（全機能） | AI変換プレビュートレイ（CONFIRM→スライドアップトレイ、Original/Emoff-ed 2カラム比較、SEND NEUTRALIZED/REFINE AIボタン、MVPはモック変換）。オプションメニュー（通報/ブロック/グループ管理）。通報フロー（メニューからのユーザー通報+メッセージ長押しからのメッセージ通報、理由4択+補足入力、Firestore reports保存）。ブロック確認ダイアログ（3ステップ確認、blocked_usersサブコレクション保存、成功時トーク一覧へ戻る）。Free上限到達UI（残数カウンター常時表示、残り5通警告バナー、上限到達ダイアログ、インプットドックロック、SharedPreferences管理）。トーン選択UI（4トーン、チャットごとにSharedPreferences保存、Pro以上のみチップ表示、バッジ/プレビューヘッダー連動）。トーク内検索（検索モードAppBar、クライアントサイドフィルター）。**フェーズ3-1完了** |
 | 2026-04-04 | 3-2 友達申請画面 | lib/screens/friend_request_screen.dart 作成。@プレフィックス付きCustomTextField+円形検索ボタン、検索結果4状態切り替え（初期/検索中/発見/未発見）、ボタン5パターン分岐（申請可能/友達済み/申請済み/申請受信中/自分自身）、ブロック中ユーザーは未発見表示、確認ダイアログ→申請送信→成功ダイアログ、自分のID表示+クリップボードコピー。CustomTextFieldにprefixIconパラメータ追加。home_screen.dartの3箇所（person_add/Invite Friend/FAB）に遷移接続 |
+| 2026-04-04 | 3-3 友達申請管理画面 | lib/screens/friend_request_management_screen.dart 作成。AppBar「REQUESTS」+シアンバッジ、セクションヘッダー（件数表示）、申請カード（アバター+名前+@userId+相対日時+承認/拒否ボタン）、承認:確認ダイアログ→バッチ書き込み（status更新+双方friends作成）→成功ダイアログ、拒否:確認ダイアログ→静かにカード消失、空状態、二重タップ防止、userIdキャッシュ。home_screen.dart・friend_request_screen.dartからの遷移接続済み |
+| 2026-04-04 | 3-4 友達プロフィール画面 + ブロック確認ダイアログ | lib/screens/friend_profile_screen.dart 作成。透過AppBar（ドロップシャドウ付きアイコン）+ポップアップメニュー（ブロック/通報）、背景画像240px（未設定時グラデーション）+グラデーションオーバーレイ、プロフィールアイコン96px（白ボーダー、背景に重なる配置）、ユーザー名+@userId+自己紹介文（任意表示）、トークボタン下部固定（既存chatId利用 or 新規チャット作成+chatId書き戻し）、ブロック確認ダイアログ（blockアイコン+箇条書き3点+キャンセル/ブロック横並び→blocked_users作成+friends双方削除→ホーム画面に戻る）。home_screen.dartの友達カードタップに遷移接続 |
+| 2026-04-04 | 3-5 グループ作成画面 | lib/screens/group_creation_screen.dart 作成。Freeプランユーザー向けアップグレード促進ダイアログ（CustomDialog: groupsアイコン+説明+プランを見る/あとでボタン）、AppBar「New Group」+右端「Create」テキストボタン（有効/無効）、グループ情報セクション（80pxアイコン+カメラオーバーレイ+グループ名入力50文字上限カウンター付き）、選択済みメンバープレビュー（横スクロールチップリスト: アバター+名前+削除×ボタン）、友達検索バー（カプセル型リアルタイムフィルタリング）、友達リスト（StreamBuilder+チェック式選択/解除、グレースケール→カラーアバター、@userId表示）、固定フッター（メンバー数+作成ボタン）、破棄確認ダイアログ、グループ作成→Firestore chats(type:group)→トークルーム画面pushReplacement遷移、Empty State+友達申請画面遷移。talk_list_screen.dartのNew Discussionボタンにプラン判定+遷移接続 |
+| 2026-04-05 | 4-1 プロフィール設定画面 | lib/screens/profile_settings_screen.dart 作成。CustomAppBar「Edit Profile」、背景画像エリア200px（半透明オーバーレイ+カメラアイコン、タップで画像選択ボトムシート）、プロフィールアイコン96px（白ボーダー+シアンカメラバッジ、背景に重なる配置）、入力フォーム（Name 20文字/User ID 20文字@プレフィックス+半角英数字制限+自動小文字変換+一意性チェック/Bio 150文字 minLines:2 maxLines:4）、文字数カウンター各フィールド、Saveボタン（変更なし/バリデーションエラー時非活性）、画像選択ボトムシート（カメラ/ライブラリ/削除、image_picker+image_cropper、アイコン1:1/背景16:9アスペクト比固定クロップ）、Firebase Storageアップロード（users/{uid}/icon.jpg, background.jpg）、AI変換プレビューダイアログ（変換前/後比較、やり直す/確認ボタン、MVPモック変換）、破棄確認ダイアログ（PopScope連動）、保存処理（画像アップロード→Firestore更新→完了ダイアログ→設定画面に戻る）。CustomTextFieldにminLines/focusNode/inputFormattersパラメータ追加。settings_screen.dartのEdit Profileボタンに遷移接続。iOS Info.plistにカメラ・フォトライブラリ権限追加。pubspec.yamlにfirebase_storage/image_picker/image_cropper追加 |
+| 2026-04-05 | 3-6 グループ管理画面 | lib/screens/group_management_screen.dart 作成。CustomAppBar「Group Settings」、グループ情報セクション（96pxアイコン+カメラオーバーレイ作成者のみ+グループ名インライン編集+メンバー数表示）、MEMBERSセクション（OWNER/YOUバッジ、ソート順: 作成者→自分→名前昇順、メンバー追加ボタン+削除ボタン作成者のみ）、メンバー追加ボトムシート（DraggableScrollableSheet: 検索バー+友達リスト+既存メンバーグレーアウト「参加中」+チェック式選択+追加ボタン）、メンバー削除確認ダイアログ（danger）、グループ退出確認ダイアログ（作成者/一般で文言分岐）、退出時popUntilでメインシェルへ、画像選択ボトムシート（MVPはTODO）、メンバータップ→友達プロフィール画面遷移（友達のみ）。talk_room_screen.dartのグループ管理メニューTODOに遷移接続。**フェーズ3（コア機能画面）全画面の実装完了** |
