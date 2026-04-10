@@ -102,7 +102,7 @@ class ChatService {
     });
   }
 
-  /// ユーザーをブロック
+  /// ユーザーをブロック（友達削除はCloud Functions onBlockUserが処理）
   Future<void> blockUser(String targetUid) async {
     final uid = currentUid;
     if (uid == null) return;
@@ -115,6 +115,32 @@ class ChatService {
         .set({
       'blockedAt': FieldValue.serverTimestamp(),
     });
+  }
+
+  /// ブロック解除
+  Future<void> unblockUser(String targetUid) async {
+    final uid = currentUid;
+    if (uid == null) return;
+
+    await _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('blocked_users')
+        .doc(targetUid)
+        .delete();
+  }
+
+  /// ブロック中ユーザーのUID一覧をリアルタイムで取得
+  Stream<Set<String>> getBlockedUserIds() {
+    final uid = currentUid;
+    if (uid == null) return Stream.value({});
+
+    return _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('blocked_users')
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.id).toSet());
   }
 
   /// 相手ユーザーの情報を取得（1対1チャット用）

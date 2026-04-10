@@ -1,0 +1,92 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // === ヘルパー関数 ===
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return request.auth.uid == uid;
+    }
+
+    function isChatMember(chatData) {
+      return request.auth.uid in chatData.members;
+    }
+
+    // === users ===
+    match /users/{uid} {
+      // 認証済みユーザーは他ユーザーのプロフィールを閲覧可能
+      allow read: if isAuthenticated();
+      // 自分のプロフィールのみ作成・更新可能
+      allow create, update: if isOwner(uid);
+      allow delete: if isOwner(uid);
+
+      // === friends サブコレクション ===
+      match /friends/{friendUid} {
+        // 自分の友達リストのみ読み書き可能
+        allow read, write: if isOwner(uid);
+      }
+
+      // === blocked_users サブコレクション ===
+      match /blocked_users/{blockedUid} {
+        // 自分のブロックリストのみ読み書き可能
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    // === friend_requests ===
+    match /friend_requests/{requestId} {
+      // 申請者または受信者のみ閲覧可能
+      allow read: if isAuthenticated()
+        && (resource.data.fromUid == request.auth.uid
+            || resource.data.toUid == request.auth.uid);
+      // 認証済みユーザーは申請を作成可能（fromUidが自分であること）
+      allow create: if isAuthenticated()
+        && request.resource.data.fromUid == request.auth.uid;
+      // 受信者のみstatusを更新可能
+      allow update: if isAuthenticated()
+        && resource.data.toUid == request.auth.uid;
+    }
+
+    // === chats ===
+    match /chats/{chatId} {
+      // チャットメンバーのみ閲覧・更新可能
+      allow read: if isAuthenticated() && isChatMember(resource.data);
+      allow create: if isAuthenticated()
+        && request.auth.uid in request.resource.data.members;
+      allow update: if isAuthenticated() && isChatMember(resource.data);
+
+      // === messages サブコレクション ===
+      match /messages/{messageId} {
+        // 親チャットのメンバーのみ閲覧・作成可能
+        allow read: if isAuthenticated()
+          && isChatMember(get(/databases/$(database)/documents/chats/$(chatId)).data);
+        allow create: if isAuthenticated()
+          && isChatMember(get(/databases/$(database)/documents/chats/$(chatId)).data)
+          && request.resource.data.senderId == request.auth.uid;
+      }
+    }
+
+    // === reports ===
+    match /reports/{reportId} {
+      // 自分の通報のみ閲覧可能
+      allow read: if isAuthenticated()
+        && resource.data.reporterUid == request.auth.uid;
+      // 認証済みユーザーは通報を作成可能（reporterUidが自分であること）
+      allow create: if isAuthenticated()
+        && request.resource.data.reporterUid == request.auth.uid;
+      // 更新・削除はAdmin SDKのみ
+      allow update, delete: if false;
+    }
+
+    // === announcements ===
+    match /announcements/{announcementId} {
+      // 認証済みユーザーは閲覧可能。作成・更新はAdmin SDKのみ
+      allow read: if isAuthenticated();
+      allow write: if false;
+    }
+  }
+}

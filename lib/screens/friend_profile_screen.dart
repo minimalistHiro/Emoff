@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../services/chat_service.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_dialog.dart';
 import '../widgets/custom_dialog_helper.dart';
@@ -22,6 +23,7 @@ class FriendProfileScreen extends StatefulWidget {
 class _FriendProfileScreenState extends State<FriendProfileScreen> {
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
+  final _chatService = ChatService();
 
   static const _backgroundColor = Color(0xFF0D0D0D);
   static const _cardColor = Color(0xFF1A1A1A);
@@ -468,39 +470,10 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
     await _executeBlock();
   }
 
-  // === ブロック処理 ===
+  // === ブロック処理（友達削除はCloud Functions onBlockUserが処理） ===
   Future<void> _executeBlock() async {
-    final myUid = _auth.currentUser?.uid;
-    if (myUid == null) return;
-
     try {
-      // blocked_usersにドキュメント作成
-      await _firestore
-          .collection('users')
-          .doc(myUid)
-          .collection('blocked_users')
-          .doc(widget.friendUid)
-          .set({
-        'blockedAt': FieldValue.serverTimestamp(),
-      });
-
-      // クライアント側で友達リストからも削除（Cloud Functionsがない場合のフォールバック）
-      final batch = _firestore.batch();
-      batch.delete(
-        _firestore
-            .collection('users')
-            .doc(myUid)
-            .collection('friends')
-            .doc(widget.friendUid),
-      );
-      batch.delete(
-        _firestore
-            .collection('users')
-            .doc(widget.friendUid)
-            .collection('friends')
-            .doc(myUid),
-      );
-      await batch.commit();
+      await _chatService.blockUser(widget.friendUid);
 
       if (!mounted) return;
 

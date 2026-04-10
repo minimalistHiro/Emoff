@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../services/chat_service.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_dialog.dart';
@@ -20,6 +21,7 @@ class TalkListScreen extends StatefulWidget {
 }
 
 class _TalkListScreenState extends State<TalkListScreen> {
+  final _chatService = ChatService();
   final _searchController = TextEditingController();
   String _searchQuery = '';
   bool _isSearchExpanded = false;
@@ -156,27 +158,45 @@ class _TalkListScreenState extends State<TalkListScreen> {
       return const Center(child: CustomLoadingIndicator());
     }
 
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('chats')
-          .where('members', arrayContains: uid)
-          .orderBy('lastMessageAt', descending: true)
-          .snapshots(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return const Center(
-            child: Text(
-              'エラーが発生しました',
-              style: TextStyle(color: _textSecondary),
-            ),
-          );
-        }
+    return StreamBuilder<Set<String>>(
+      stream: _chatService.getBlockedUserIds(),
+      builder: (context, blockedSnapshot) {
+        final blockedIds = blockedSnapshot.data ?? {};
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CustomLoadingIndicator());
-        }
+        return StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('chats')
+              .where('members', arrayContains: uid)
+              .orderBy('lastMessageAt', descending: true)
+              .snapshots(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const Center(
+                child: Text(
+                  'エラーが発生しました',
+                  style: TextStyle(color: _textSecondary),
+                ),
+              );
+            }
 
-        final chats = snapshot.data?.docs ?? [];
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CustomLoadingIndicator());
+            }
+
+            // ブロックユーザーとのDMチャットを非表示
+            final allChats = snapshot.data?.docs ?? [];
+            final chats = allChats.where((doc) {
+              final data = doc.data() as Map<String, dynamic>;
+              if (data['type'] == 'direct') {
+                final members = List<String>.from(data['members'] ?? []);
+                final otherUid = members.firstWhere(
+                  (id) => id != uid,
+                  orElse: () => '',
+                );
+                return !blockedIds.contains(otherUid);
+              }
+              return true;
+            }).toList();
         final filteredChats = _searchQuery.isEmpty
             ? chats
             : chats.where((doc) {
@@ -260,6 +280,8 @@ class _TalkListScreenState extends State<TalkListScreen> {
               ),
             ),
           ],
+        );
+          },
         );
       },
     );

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -116,6 +117,10 @@ class _TalkRoomScreenState extends State<TalkRoomScreen>
   final _searchController = TextEditingController();
   String _searchQuery = '';
 
+  // ブロックユーザーフィルター
+  Set<String> _blockedUserIds = {};
+  StreamSubscription<Set<String>>? _blockedSubscription;
+
   @override
   void initState() {
     super.initState();
@@ -135,10 +140,15 @@ class _TalkRoomScreenState extends State<TalkRoomScreen>
     _loadSelectedTone();
     // 既読を更新
     _chatService.updateLastRead(widget.chatId);
+    // ブロックユーザー一覧を購読
+    _blockedSubscription = _chatService.getBlockedUserIds().listen((ids) {
+      if (mounted) setState(() => _blockedUserIds = ids);
+    });
   }
 
   @override
   void dispose() {
+    _blockedSubscription?.cancel();
     _trayAnimController.dispose();
     _messageController.dispose();
     _scrollController.dispose();
@@ -1070,6 +1080,15 @@ class _TalkRoomScreenState extends State<TalkRoomScreen>
         }
 
         var docs = snapshot.data?.docs ?? [];
+
+        // ブロックユーザーのメッセージを非表示
+        if (_blockedUserIds.isNotEmpty) {
+          docs = docs.where((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            final senderId = data['senderId'] as String? ?? '';
+            return !_blockedUserIds.contains(senderId);
+          }).toList();
+        }
 
         if (docs.isEmpty) {
           return _buildEmptyState();

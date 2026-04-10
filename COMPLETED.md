@@ -13,6 +13,18 @@
 
 ---
 
+## 2026-04-10
+
+| ID | 優先度 | 内容 | 状態 |
+|---|---|---|---|
+| A-12 | 高 | ブロック機能の実装（Cloud Functions onBlockUser友達自動削除、chat_serviceにunblockUser/getBlockedUserIds追加、トーク一覧でDM非表示、メッセージキャンバスでブロックユーザー非表示） | [x] 完了（2026-04-10） |
+| A-11 | 高 | アカウント削除時のデータクリーンアップCloud Functionsの実装（cleanupDeletedUser関数 — Auth削除トリガーでusers/friends/blocked_users/chats.members/friend_requestsを一括削除） | [x] 完了（2026-04-10） |
+| A-10 | 高 | 非正規化データ同期用Cloud Functionsの実装（syncUserProfile関数 — users/{uid}更新時にfriends/friend_requestsの非正規化フィールドを同期） | [x] 完了（2026-04-10） |
+| A-9 | 高 | Firestoreセキュリティルールのデプロイ（firestore.rules作成、firebase.jsonにrules設定追加、friend_requests/chatsの複合インデックス追加、firebase deploy --only firestore実行） | [x] 完了（2026-04-10） |
+| A-7 | 高 | 変換前テキストの自動削除機能の実装（Cloud Functions `deleteExpiredOriginalTexts` — 毎日3時JSTにcreatedAt 1ヶ月超のmessages.originalTextをnullに更新。collectionGroupインデックス+Firebase Blazeプラン+IAM権限設定含む） | [x] 完了（2026-04-10） |
+
+---
+
 ## 2026-04-09
 
 | ID | 優先度 | 内容 | 状態 |

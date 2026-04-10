@@ -21,11 +21,6 @@
 
 | ID | 優先度 | 内容 | 状態 |
 |---|---|---|---|
-| A-7 | 高 | 変換前テキストの自動削除機能の実装（Firestoreに1ヶ月保存後に自動削除） | [ ] 未着手 |
-| A-9 | 高 | Firestoreセキュリティルールのデプロイ | [ ] 未着手 |
-| A-10 | 高 | 非正規化データ同期用Cloud Functionsの実装（プロフィール更新時のfriends/friend_requests同期） | [ ] 未着手 |
-| A-11 | 高 | アカウント削除時のデータクリーンアップCloud Functionsの実装 | [ ] 未着手 |
-| A-12 | 高 | ブロック機能の実装（blocked_usersサブコレクション、友達削除連動、メッセージ非表示） | [ ] 未着手 |
 | A-13 | 高 | 通報機能の実装（reportsコレクション、通報理由選択UI） | [ ] 未着手 |
 | A-24 | 中 | グループアイコンの画像選択・アップロード機能実装（group_management_screen.dartの画像選択ボトムシートTODOを実装） | [ ] 未着手 |
 | A-25 | 高 | RevenueCatダッシュボード設定（APIキー取得、App Store Connect / Google Play Console連携、Entitlement `pro` + Offering作成、商品ID `emoff_pro_monthly` 登録） | [ ] 未着手 |
