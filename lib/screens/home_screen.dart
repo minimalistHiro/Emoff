@@ -3,13 +3,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_button.dart';
+import '../widgets/custom_drawer.dart';
 import '../widgets/custom_loading_indicator.dart';
 import 'friend_request_screen.dart';
 import 'friend_request_management_screen.dart';
 import 'friend_profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, this.onSwitchToSettings});
+
+  final VoidCallback? onSwitchToSettings;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -37,8 +40,9 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _backgroundColor,
-      // TODO: サイドドロワー（4-7）実装後に正式な Drawer に置き換え
-      drawer: const Drawer(),
+      drawer: CustomDrawer(
+        onSwitchToSettings: widget.onSwitchToSettings ?? () {},
+      ),
       appBar: _isSearchExpanded ? _buildSearchAppBar() : _buildNormalAppBar(),
       body: _buildBody(),
       floatingActionButton: _buildFAB(),
@@ -51,7 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
       leading: IconButton(
         icon: const Icon(Icons.menu, color: _cyan),
         onPressed: () {
-          // TODO: サイドドロワー（4-7）実装後に接続
           Scaffold.of(context).openDrawer();
         },
       ),

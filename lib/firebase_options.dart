@@ -64,7 +64,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '413054625629',
     projectId: 'emoff-e82a4',
     storageBucket: 'emoff-e82a4.firebasestorage.app',
-    iosBundleId: 'com.example.emoff',
+    iosBundleId: 'io.groumap.emoff',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -73,7 +73,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '413054625629',
     projectId: 'emoff-e82a4',
     storageBucket: 'emoff-e82a4.firebasestorage.app',
-    iosBundleId: 'com.example.emoff',
+    iosBundleId: 'io.groumap.emoff',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(

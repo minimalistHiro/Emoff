@@ -5,7 +5,11 @@ import '../services/auth_service.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_dialog_helper.dart';
+import 'account_settings_screen.dart';
 import 'login_screen.dart';
+import 'notification_settings_screen.dart';
+import 'announcements_screen.dart';
+import 'legal_document_screen.dart';
 import 'profile_settings_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -52,7 +56,11 @@ class SettingsScreen extends StatelessWidget {
               title: 'Notifications',
               icon: Icons.chevron_right,
               onTap: () {
-                // TODO: フェーズ4で通知設定画面へ遷移
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const NotificationSettingsScreen(),
+                  ),
+                );
               },
             ),
             _buildSettingsItem(
@@ -60,7 +68,11 @@ class SettingsScreen extends StatelessWidget {
               title: 'Account Settings',
               icon: Icons.chevron_right,
               onTap: () {
-                // TODO: フェーズ4でアカウント設定画面へ遷移
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const AccountSettingsScreen(),
+                  ),
+                );
               },
             ),
             _buildSettingsItem(
@@ -68,7 +80,11 @@ class SettingsScreen extends StatelessWidget {
               title: 'Announcements',
               icon: Icons.chevron_right,
               onTap: () {
-                // TODO: フェーズ4でお知らせ画面へ遷移
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const AnnouncementsScreen(),
+                  ),
+                );
               },
             ),
             // LEGAL & PRIVACY Section
@@ -78,17 +94,31 @@ class SettingsScreen extends StatelessWidget {
             _buildSettingsItem(
               context,
               title: 'Privacy Policy',
-              icon: Icons.open_in_new,
+              icon: Icons.chevron_right,
               onTap: () {
-                // TODO: フェーズ4でプライバシーポリシー画面へ遷移
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const LegalDocumentScreen(
+                      title: 'Privacy Policy',
+                      assetPath: 'assets/privacy_policy.md',
+                    ),
+                  ),
+                );
               },
             ),
             _buildSettingsItem(
               context,
               title: 'Terms of Service',
-              icon: Icons.open_in_new,
+              icon: Icons.chevron_right,
               onTap: () {
-                // TODO: フェーズ4で利用規約画面へ遷移
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const LegalDocumentScreen(
+                      title: 'Terms of Service',
+                      assetPath: 'assets/terms_of_service.md',
+                    ),
+                  ),
+                );
               },
             ),
             // Footer (Logout + Version)

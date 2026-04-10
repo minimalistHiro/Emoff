@@ -10,6 +10,7 @@ import '../widgets/custom_dialog_helper.dart';
 import '../widgets/custom_loading_indicator.dart';
 import '../widgets/custom_text_field.dart';
 import 'group_management_screen.dart';
+import 'subscription_screen.dart';
 
 class TalkRoomScreen extends StatefulWidget {
   const TalkRoomScreen({
@@ -404,7 +405,11 @@ class _TalkRoomScreenState extends State<TalkRoomScreen>
             variant: CustomButtonVariant.primary,
             onPressed: () {
               Navigator.pop(context);
-              // TODO: サブスクリプション画面への遷移
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const SubscriptionScreen(),
+                ),
+              );
             },
           ),
           const SizedBox(height: 8),
@@ -1399,7 +1404,11 @@ class _TalkRoomScreenState extends State<TalkRoomScreen>
               // アップグレードリンク
               GestureDetector(
                 onTap: () {
-                  // TODO: サブスクリプション画面への遷移
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => const SubscriptionScreen(),
+                    ),
+                  );
                 },
                 child: const Text(
                   'Proプランで無制限に →',

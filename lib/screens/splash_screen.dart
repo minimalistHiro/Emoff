@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../services/revenue_cat_service.dart';
 import '../widgets/custom_loading_indicator.dart';
 import 'login_screen.dart';
 import 'main_shell.dart';
@@ -61,6 +62,9 @@ class _SplashScreenState extends State<SplashScreen>
     try {
       final user = FirebaseAuth.instance.currentUser;
       isAuthenticated = user != null;
+      if (isAuthenticated) {
+        await RevenueCatService.init(user.uid);
+      }
     } catch (_) {
       // エラー時はログイン画面へ（安全側に倒す）
       isAuthenticated = false;

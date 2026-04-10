@@ -37,6 +37,8 @@
 | `iconUrl` | string | - | プロフィールアイコンのURL |
 | `backgroundUrl` | string | - | プロフィール背景画像のURL |
 | `bio` | string | - | 自己紹介文（AI変換後のテキストを保存） |
+| `plan` | string | - | サブスクリプションプラン（`free` / `pro` / `business`）。デフォルト `free` |
+| `planExpiresAt` | timestamp | - | サブスクリプション有効期限（RevenueCat Webhookまたはクライアントから更新） |
 | `createdAt` | timestamp | ○ | アカウント作成日時 |
 | `updatedAt` | timestamp | ○ | 最終更新日時 |
 

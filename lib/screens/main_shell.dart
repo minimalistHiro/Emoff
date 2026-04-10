@@ -19,11 +19,15 @@ class _MainShellState extends State<MainShell> {
   static const _textDisabled = Color(0xFF555555);
   static const _borderColor = Color(0xFF242424);
 
-  final List<Widget> _screens = const [
-    HomeScreen(),
-    TalkListScreen(),
-    SettingsScreen(),
+  late final List<Widget> _screens = [
+    HomeScreen(onSwitchToSettings: _switchToSettings),
+    TalkListScreen(onSwitchToSettings: _switchToSettings),
+    const SettingsScreen(),
   ];
+
+  void _switchToSettings() {
+    setState(() => _currentIndex = 2);
+  }
 
   @override
   Widget build(BuildContext context) {

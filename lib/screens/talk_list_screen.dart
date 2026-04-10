@@ -4,12 +4,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_dialog.dart';
+import '../widgets/custom_drawer.dart';
 import '../widgets/custom_loading_indicator.dart';
 import 'talk_room_screen.dart';
 import 'group_creation_screen.dart';
+import 'subscription_screen.dart';
 
 class TalkListScreen extends StatefulWidget {
-  const TalkListScreen({super.key});
+  const TalkListScreen({super.key, this.onSwitchToSettings});
+
+  final VoidCallback? onSwitchToSettings;
 
   @override
   State<TalkListScreen> createState() => _TalkListScreenState();
@@ -37,7 +41,9 @@ class _TalkListScreenState extends State<TalkListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: _backgroundColor,
-      drawer: const Drawer(),
+      drawer: CustomDrawer(
+        onSwitchToSettings: widget.onSwitchToSettings ?? () {},
+      ),
       appBar: _isSearchExpanded ? _buildSearchAppBar() : _buildNormalAppBar(),
       body: _buildBody(),
     );
@@ -52,7 +58,6 @@ class _TalkListScreenState extends State<TalkListScreen> {
         builder: (context) => IconButton(
           icon: const Icon(Icons.menu, color: _cyan),
           onPressed: () {
-            // TODO: サイドドロワー（4-7）実装後に接続
             Scaffold.of(context).openDrawer();
           },
         ),
@@ -371,7 +376,11 @@ class _TalkListScreenState extends State<TalkListScreen> {
               text: 'プランを見る',
               onPressed: () {
                 Navigator.of(dialogContext).pop();
-                // TODO: サブスクリプション画面（4-8）実装後に遷移を接続
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const SubscriptionScreen(),
+                  ),
+                );
               },
             ),
             const SizedBox(height: 8),

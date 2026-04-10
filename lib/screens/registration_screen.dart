@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../services/auth_service.dart';
+import '../services/revenue_cat_service.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/custom_dialog.dart';
@@ -110,6 +112,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         password: password,
         name: name,
       );
+      final uid = FirebaseAuth.instance.currentUser?.uid;
+      if (uid != null) {
+        await RevenueCatService.init(uid);
+      }
       if (!mounted) return;
 
       // AI処理同意ポップアップを表示

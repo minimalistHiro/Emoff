@@ -1,6 +1,6 @@
 # 画面実装 進捗管理
 
-> 最終更新: 2026-04-05
+> 最終更新: 2026-04-09
 
 ---
 
@@ -28,8 +28,7 @@
 
 | ドキュメント | 役割 | いつ参照するか |
 |---|---|---|
-| `plans/in_progress/` | 設計書（未実装） | 実装対象画面の詳細設計を確認 |
-| `plans/completed/` | 設計書（実装済み） | 実装完了した設計書の格納先 |
+| `plans/completed/` | 設計書（全画面実装完了） | 設計書の格納先 |
 | `FIRESTORE.md` | データベース構造 | Firestoreのフィールド・クエリ仕様の確認 |
 | `UI_UX.md` | デザインルール・共通コンポーネント | CustomButton, CustomDialog等のルール準拠 |
 | `BUSINESS_MODEL.md` | 仕様・プラン制約 | Free/Pro/Businessの機能制限等 |
@@ -40,7 +39,7 @@
 
 ## 実装の前提ルール
 
-- **設計書が `plans/in_progress/` に存在する画面のみ実装対象とする**
+- **設計書が `plans/completed/` に存在する画面のみ実装対象とする**
 - 設計書がない画面は、先に design-navigator で設計を完了させる
 - 実装時は設計書の仕様に忠実に従う。仕様変更が必要な場合はユーザーに確認する
 - UI_UX.md のコンポーネントルール（CustomButton, CustomDialog, CustomTextField 等）を必ず遵守する
@@ -80,9 +79,9 @@
 
 | # | 画面名 | 設計書 | 状態 | 前提・ブロッカー |
 |---|--------|--------|------|-----------------|
-| 1-1 | スプラッシュ画面 | `plans/in_progress/20260403_splash_screen_design.md` | [x] 完了（2026-04-03） | フェーズ0完了が前提 |
-| 1-2 | ログイン画面 | `plans/in_progress/20260403_login_screen_design.md` | [x] 完了（2026-04-03） | フェーズ0完了が前提 |
-| 1-3 | 新規登録画面 + AI処理同意ポップアップ + オンボーディング画面 | `plans/in_progress/20260403_registration_screen_design.md` | [x] 完了（2026-04-03） | フェーズ0完了が前提 |
+| 1-1 | スプラッシュ画面 | `plans/completed/20260403_splash_screen_design.md` | [x] 完了（2026-04-03） | フェーズ0完了が前提 |
+| 1-2 | ログイン画面 | `plans/completed/20260403_login_screen_design.md` | [x] 完了（2026-04-03） | フェーズ0完了が前提 |
+| 1-3 | 新規登録画面 + AI処理同意ポップアップ + オンボーディング画面 | `plans/completed/20260403_registration_screen_design.md` | [x] 完了（2026-04-03） | フェーズ0完了が前提 |
 | 1-4 | パスワードリセット画面 | `plans/completed/20260403_password_reset_screen_design.md` | [x] 完了（2026-04-03） | フェーズ0完了が前提 |
 
 **フェーズ完了条件:** 認証フロー全画面の実装が完了し、ログイン→ホーム画面への遷移が動作すること
@@ -95,8 +94,8 @@
 
 | # | 画面名 | 設計書 | 状態 | 前提・ブロッカー |
 |---|--------|--------|------|-----------------|
-| 2-1 | ホーム画面（友達一覧） | `plans/in_progress/20260403_home_friends_screen_design.md` | [x] 完了（2026-04-03） | フェーズ1完了が前提 |
-| 2-2 | トーク一覧画面 | `plans/in_progress/20260403_talk_list_screen_design.md` | [x] 完了（2026-04-03） | フェーズ1完了が前提 |
+| 2-1 | ホーム画面（友達一覧） | `plans/completed/20260403_home_friends_screen_design.md` | [x] 完了（2026-04-03） | フェーズ1完了が前提 |
+| 2-2 | トーク一覧画面 | `plans/completed/20260403_talk_list_screen_design.md` | [x] 完了（2026-04-03） | フェーズ1完了が前提 |
 | 2-3 | 設定画面 | `plans/completed/20260403_settings_screen_design.md` | [x] 完了（2026-04-03） | フェーズ1完了が前提 |
 
 **フェーズ完了条件:** 3タブすべてが設計書通りに実装され、画面間の遷移が正常に動作すること
@@ -132,15 +131,15 @@
 | # | 画面名 | 設計書 | 状態 | 前提・ブロッカー |
 |---|--------|--------|------|-----------------|
 | 4-1 | プロフィール設定画面 | `plans/completed/20260403_profile_settings_screen_design.md` | [x] 完了（2026-04-05） | フェーズ2（設定画面）完了が前提 |
-| 4-2 | アカウント設定画面 | `plans/in_progress/20260403_account_settings_screen_design.md` | [ ] 未着手 | フェーズ2（設定画面）完了が前提 |
-| 4-3 | 通知設定画面 | `plans/in_progress/20260403_notification_settings_screen_design.md` | [ ] 未着手 | フェーズ2（設定画面）完了が前提 |
-| 4-4 | お知らせ画面 | `plans/in_progress/20260403_announcements_screen_design.md` | [ ] 未着手 | フェーズ2（設定画面）完了が前提 |
-| 4-5 | プライバシーポリシー画面 | `plans/in_progress/20260403_privacy_policy_screen_design.md` | [ ] 未着手 | フェーズ2（設定画面）完了が前提 |
-| 4-6 | 利用規約画面 | `plans/in_progress/20260403_terms_of_service_screen_design.md` | [ ] 未着手 | フェーズ2（設定画面）完了が前提 |
+| 4-2 | アカウント設定画面 | `plans/completed/20260403_account_settings_screen_design.md` | [x] 完了（2026-04-08） | フェーズ2（設定画面）完了が前提 |
+| 4-3 | 通知設定画面 | `plans/completed/20260403_notification_settings_screen_design.md` | [x] 完了（2026-04-08） | フェーズ2（設定画面）完了が前提 |
+| 4-4 | お知らせ画面 | `plans/completed/20260403_announcements_screen_design.md` | [x] 完了（2026-04-08） | フェーズ2（設定画面）完了が前提 |
+| 4-5 | プライバシーポリシー画面 | `plans/completed/20260403_privacy_policy_screen_design.md` | [x] 完了（2026-04-08） | フェーズ2（設定画面）完了が前提 |
+| 4-6 | 利用規約画面 | `plans/completed/20260403_terms_of_service_screen_design.md` | [x] 完了（2026-04-08） | フェーズ2（設定画面）完了が前提 |
 
-| 4-7 | サイドドロワー | `plans/in_progress/20260403_side_drawer_design.md` | [ ] 未着手 | フェーズ2（ホーム画面・トーク一覧画面）完了が前提。共通ウィジェット `custom_drawer.dart` として実装 |
+| 4-7 | サイドドロワー | `plans/completed/20260403_side_drawer_design.md` | [x] 完了（2026-04-09） | フェーズ2（ホーム画面・トーク一覧画面）完了が前提。共通ウィジェット `custom_drawer.dart` として実装 |
 
-| 4-8 | サブスクリプション/課金画面 | `plans/in_progress/20260403_subscription_screen_design.md` | [ ] 未着手 | サイドドロワー・トークルームFree上限・グループ作成画面からの遷移先。アプリ内課金（StoreKit 2 / Google Play Billing）の実装が必要 |
+| 4-8 | サブスクリプション/課金画面 | `plans/completed/20260403_subscription_screen_design.md` | [x] 完了（2026-04-09） | RevenueCat SDK統合。サイドドロワー×2・トークルームFree上限×2・グループ作成ダイアログからの遷移接続完了 |
 
 **全画面の設計が完了。これ以上の追加はなし。**
 
@@ -154,8 +153,8 @@
 | 1. 認証フロー | 4 | 4 | 0 |
 | 2. メイン画面 | 3 | 3 | 0 |
 | 3. コア機能画面 | 6 | 6 | 0 |
-| 4. 設定サブ画面・その他 | 8 | 1 | 7 |
-| **合計** | **25** | **18** | **7** |
+| 4. 設定サブ画面・その他 | 8 | 8 | 0 |
+| **合計** | **25** | **25** | **0** |
 
 ※ 設計が完了するたびに項目が追加される
 
@@ -185,4 +184,10 @@
 | 2026-04-04 | 3-4 友達プロフィール画面 + ブロック確認ダイアログ | lib/screens/friend_profile_screen.dart 作成。透過AppBar（ドロップシャドウ付きアイコン）+ポップアップメニュー（ブロック/通報）、背景画像240px（未設定時グラデーション）+グラデーションオーバーレイ、プロフィールアイコン96px（白ボーダー、背景に重なる配置）、ユーザー名+@userId+自己紹介文（任意表示）、トークボタン下部固定（既存chatId利用 or 新規チャット作成+chatId書き戻し）、ブロック確認ダイアログ（blockアイコン+箇条書き3点+キャンセル/ブロック横並び→blocked_users作成+friends双方削除→ホーム画面に戻る）。home_screen.dartの友達カードタップに遷移接続 |
 | 2026-04-04 | 3-5 グループ作成画面 | lib/screens/group_creation_screen.dart 作成。Freeプランユーザー向けアップグレード促進ダイアログ（CustomDialog: groupsアイコン+説明+プランを見る/あとでボタン）、AppBar「New Group」+右端「Create」テキストボタン（有効/無効）、グループ情報セクション（80pxアイコン+カメラオーバーレイ+グループ名入力50文字上限カウンター付き）、選択済みメンバープレビュー（横スクロールチップリスト: アバター+名前+削除×ボタン）、友達検索バー（カプセル型リアルタイムフィルタリング）、友達リスト（StreamBuilder+チェック式選択/解除、グレースケール→カラーアバター、@userId表示）、固定フッター（メンバー数+作成ボタン）、破棄確認ダイアログ、グループ作成→Firestore chats(type:group)→トークルーム画面pushReplacement遷移、Empty State+友達申請画面遷移。talk_list_screen.dartのNew Discussionボタンにプラン判定+遷移接続 |
 | 2026-04-05 | 4-1 プロフィール設定画面 | lib/screens/profile_settings_screen.dart 作成。CustomAppBar「Edit Profile」、背景画像エリア200px（半透明オーバーレイ+カメラアイコン、タップで画像選択ボトムシート）、プロフィールアイコン96px（白ボーダー+シアンカメラバッジ、背景に重なる配置）、入力フォーム（Name 20文字/User ID 20文字@プレフィックス+半角英数字制限+自動小文字変換+一意性チェック/Bio 150文字 minLines:2 maxLines:4）、文字数カウンター各フィールド、Saveボタン（変更なし/バリデーションエラー時非活性）、画像選択ボトムシート（カメラ/ライブラリ/削除、image_picker+image_cropper、アイコン1:1/背景16:9アスペクト比固定クロップ）、Firebase Storageアップロード（users/{uid}/icon.jpg, background.jpg）、AI変換プレビューダイアログ（変換前/後比較、やり直す/確認ボタン、MVPモック変換）、破棄確認ダイアログ（PopScope連動）、保存処理（画像アップロード→Firestore更新→完了ダイアログ→設定画面に戻る）。CustomTextFieldにminLines/focusNode/inputFormattersパラメータ追加。settings_screen.dartのEdit Profileボタンに遷移接続。iOS Info.plistにカメラ・フォトライブラリ権限追加。pubspec.yamlにfirebase_storage/image_picker/image_cropper追加 |
+| 2026-04-08 | 4-2 アカウント設定画面 | lib/screens/account_settings_screen.dart 作成。ACCOUNTセクション（Email Address: 現在メール表示+変更ダイアログ、Password: 変更ダイアログ）、DANGER ZONEセクション（Logout: アイコン付き確認ダイアログ+signOut+ログイン画面遷移、Delete Account: 2段階確認フロー 警告ダイアログ→パスワード再入力→再認証→usersドキュメント削除+Auth削除+ログイン画面遷移）。全ダイアログで再認証（reauthenticateWithCredential）、ローディング表示、toUserFriendlyErrorエラー変換。Cloud Functionsによる関連データクリーンアップはTODO。settings_screen.dartのAccount Settingsに遷移接続 |
+| 2026-04-08 | 4-4 お知らせ画面 | lib/screens/announcements_screen.dart 作成。CustomAppBar「Announcements」、お知らせカード（#1A1A1A背景、角丸12px、タイトル+日付「YYYY年M月D日」形式+本文最大3行ellipsis）、展開/折りたたみ（AnimatedSize、「もっと見る」/「閉じる」切替）、ワンショット取得（announcements.orderBy createdAt desc .get()）、RefreshIndicatorでプルトゥリフレッシュ、空状態（notifications_noneアイコン+テキスト）、CustomLoadingIndicator、エラー時showCustomDialog。settings_screen.dartのAnnouncementsにAnnouncementsScreen遷移接続 |
+| 2026-04-08 | 4-3 通知設定画面 | lib/screens/notification_settings_screen.dart 作成。CustomAppBar「Notifications」、メイントグル（Push Notifications: 全通知一括ON/OFF、OFF時は個別設定をopacity 0.4で非活性化）、NOTIFICATION TYPESセクション（Messages/Friend Requests/Announcementsの3種別トグル）、SharedPreferences保存（notification_enabled/notification_messages/notification_friend_requests/notification_announcements、デフォルト全てtrue）、注意テキスト（端末設定への案内）。FCM連携はR-10決定後にTODO。settings_screen.dartのNotificationsに遷移接続 |
+| 2026-04-08 | 4-5 プライバシーポリシー画面 + 4-6 利用規約画面 | lib/screens/legal_document_screen.dart を共通ウィジェットとして作成（LegalDocumentScreen: title+assetPathパラメータ化）。flutter_markdown+url_launcherパッケージ追加。assets/privacy_policy.md・assets/terms_of_service.mdをアプリ内バンドル。rootBundle.loadStringで読み込み→MarkdownBodyでレンダリング。カスタムスタイルシート（h1:20px白/h2:18px白/h3:16px白/本文:14px#A0A0A0/リンク:#00D4FF/ビュレット:#555555）。リンクタップで外部ブラウザ起動（url_launcher）。読み込み失敗時エラーダイアログ。settings_screen.dartのPrivacy Policy・Terms of Serviceに遷移接続（アイコンをchevron_rightに変更） |
+| 2026-04-09 | 4-7 サイドドロワー | lib/widgets/custom_drawer.dart を共通ウィジェットとして作成。ヘッダー（#1A1A1A背景、64pxアバター+ユーザー名+@userId+プランバッジFREE/PRO/BIZ、StreamBuilderでリアルタイム監視、タップでプロフィール設定画面遷移）。プランセクション（Freeのみ表示、rocket_launchアイコン+Upgrade to Pro+説明+View Plansカプセルボタン）。ナビリスト3項目（Subscription: credit_cardアイコン+Pro/Bizプラン名バッジ / Announcements: campaignアイコン+SharedPreferences未読件数バッジ / Settings: ボトムナビ設定タブ切替）。フッター（EMOFF v1.0.0）。ドロワー幅75%最大280px、右上右下16px角丸。home_screen.dart・talk_list_screen.dartのdrawer置き換え+TODOコメント削除。main_shell.dartでonSwitchToSettingsコールバック渡し。サブスクリプション画面遷移はTODO |
+| 2026-04-09 | 4-8 サブスクリプション/課金画面 | lib/screens/subscription_screen.dart 作成。lib/services/revenue_cat_service.dart 作成（RevenueCat SDK統合）。CustomAppBar「Subscription」、ヒーローセクション「CHOOSE YOUR CLARITY」+「Plans」、現在プランバナー（Pro/Bizのみ: CURRENT PLAN+プラン名+次回請求日+Manage Subscriptionリンク）、3プランカード縦並び（Free: ¥0+機能4行+Current Planボタン / Pro: シアンボーダー2px+RECOMMENDEDバッジ+¥300シアン+Upgrade to Proボタン / Business: opacity 60%+COMING SOONバッジ+タップ不可）、注釈セクション（自動更新説明+利用規約/プライバシーポリシーリンク+Restore Purchasesリンク）。購入フロー: RevenueCat purchase()→成功ダイアログ（check_circle緑）/失敗ダイアログ（error赤）/キャンセル無操作。Firestore users/{uid}.plan+planExpiresAt更新。購入復元対応。splash_screen.dart/login_screen.dart/registration_screen.dartにRevenueCat初期化追加。custom_drawer.dart×2+talk_list_screen.dart+talk_room_screen.dart×2の計5箇所のTODO解消→遷移接続完了。FIRESTORE.mdにplan/planExpiresAtフィールド追加。**全25画面の実装完了** |
 | 2026-04-05 | 3-6 グループ管理画面 | lib/screens/group_management_screen.dart 作成。CustomAppBar「Group Settings」、グループ情報セクション（96pxアイコン+カメラオーバーレイ作成者のみ+グループ名インライン編集+メンバー数表示）、MEMBERSセクション（OWNER/YOUバッジ、ソート順: 作成者→自分→名前昇順、メンバー追加ボタン+削除ボタン作成者のみ）、メンバー追加ボトムシート（DraggableScrollableSheet: 検索バー+友達リスト+既存メンバーグレーアウト「参加中」+チェック式選択+追加ボタン）、メンバー削除確認ダイアログ（danger）、グループ退出確認ダイアログ（作成者/一般で文言分岐）、退出時popUntilでメインシェルへ、画像選択ボトムシート（MVPはTODO）、メンバータップ→友達プロフィール画面遷移（友達のみ）。talk_room_screen.dartのグループ管理メニューTODOに遷移接続。**フェーズ3（コア機能画面）全画面の実装完了** |

@@ -92,6 +92,18 @@
 
 ---
 
+## 技術スタック（課金）
+
+| 項目 | 選定内容 |
+|------|---------|
+| **アプリ内課金SDK** | RevenueCat（`purchases_flutter`） |
+| **レシート検証** | RevenueCatが自動処理（サーバーサイド検証不要） |
+| **Cloud Functions** | RevenueCat Webhook受信 → Firestore `users/{uid}.plan` 更新の1関数のみ |
+| **プラン判定** | RevenueCat `customerInfo` + Firestore `plan` フィールド + SharedPreferencesキャッシュ |
+| **選定理由** | MVP段階で課金バックエンド実装を最小化。MTR $2,500/月まで無料（約1,200 Proユーザー）。Restore/Grace Period等を自動管理 |
+
+---
+
 ## 収益モデル
 
 **ハイブリッド型フリーミアム**（個人フリーミアム + 法人サブスクリプション）

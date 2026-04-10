@@ -1,6 +1,6 @@
 # APP_SCREENS.md
 
-> 最終更新: 2026-04-05（プロフィール設定画面実装完了）
+> 最終更新: 2026-04-09（サブスクリプション画面実装完了）
 
 **このファイルには実装済みの画面・コンポーネントのみを記載する。** 未実装の画面は IMPLEMENTATION_PROGRESS.md / DESIGN_PROGRESS.md で管理する。
 
@@ -22,6 +22,7 @@
 [ボトムナビゲーション]
 ├── ホームタブ
 │     └── ホーム画面（友達一覧）
+│               ├── [ハンバーガーメニュー] → サイドドロワー
 │               ├── 友達プロフィール画面
 │               │         └── [トークボタン] → トークルーム画面
 │               ├── 友達申請画面
@@ -29,6 +30,7 @@
 │
 ├── トークタブ
 │     └── トーク一覧画面
+│               ├── [ハンバーガーメニュー] → サイドドロワー
 │               ├── トークルーム画面
 │               │         └── [確認ボタン] → AI変換プレビュー → [送信] → メッセージ送信
 │               └── グループ作成画面
@@ -42,6 +44,16 @@
             ├── お知らせ画面
             ├── プライバシーポリシー画面
             └── 利用規約画面
+
+[サイドドロワー] ← ホーム画面・トーク一覧画面の左端メニューから展開
+├── [アバタータップ] → プロフィール設定画面
+├── Subscription → サブスクリプション画面
+│                    ├── [Upgrade to Pro] → OS課金シート → 成功/失敗ダイアログ
+│                    ├── [Restore Purchases] → 購入復元
+│                    ├── [利用規約] → 利用規約画面
+│                    └── [プライバシーポリシー] → プライバシーポリシー画面
+├── Announcements → お知らせ画面
+└── Settings → 設定タブに切替
 ```
 
 ---
@@ -51,7 +63,7 @@
 ### スプラッシュ画面
 - **概要**: アプリ起動時に「EMOFF」ロゴ + タグライン「Emotion off.」を表示し、Firebase Authの認証状態を判定して遷移先を分岐する
 - **ファイル**: `lib/screens/splash_screen.dart`
-- **設計書**: `plans/in_progress/20260403_splash_screen_design.md`
+- **設計書**: `plans/completed/20260403_splash_screen_design.md`
 - **主な仕様**:
   - FadeIn + ScaleUp（600ms）でロゴ表示、続いてローディングインジケーターをFadeIn（300ms）
   - アンビエントグロー（シアン, opacity 4%, blur 150px）の背景演出
@@ -61,7 +73,7 @@
 ### ログイン画面
 - **概要**: メールアドレス + パスワードでログインする画面。「Welcome Back — Access your workspace for clarity.」のコピーでEmoffの哲学を訴求
 - **ファイル**: `lib/screens/login_screen.dart`
-- **設計書**: `plans/in_progress/20260403_login_screen_design.md`
+- **設計書**: `plans/completed/20260403_login_screen_design.md`
 - **主な仕様**:
   - ブランディング領域: 「EMOFF」ロゴ（シアン、レタースペーシング広め）
   - ウェルカムヘッダー: 「Welcome Back」+ サブテキスト（左寄せ）
@@ -77,7 +89,7 @@
 ### 新規登録画面 + AI処理同意ポップアップ
 - **概要**: メールアドレス + パスワードで新規アカウントを作成する画面。登録後にAI処理同意ポップアップを表示し、同意後にオンボーディング画面へ遷移する
 - **ファイル**: `lib/screens/registration_screen.dart`
-- **設計書**: `plans/in_progress/20260403_registration_screen_design.md`
+- **設計書**: `plans/completed/20260403_registration_screen_design.md`
 - **主な仕様**:
   - ブランディング領域: 「EMOFF」ロゴ（シアン、レタースペーシング広め）
   - ウェルカムヘッダー: 「Create Account」+「Join the philosophy of clarity.」（左寄せ）
@@ -90,12 +102,12 @@
   - AI処理同意ポップアップ: CustomDialog、barrierDismissible: false、番号付き4項目（Anthropicへの送信・保存期間・データ削除権利等）
   - 「同意しない」選択時はアカウントを削除して新規登録画面に留まる
   - iPhone SE対応: `SingleChildScrollView` + `SafeArea`
-- **遷移先**: オンボーディング画面（AI同意後）、ログイン画面（Loginリンク）、利用規約画面（未実装）、プライバシーポリシー画面（未実装）
+- **遷移先**: オンボーディング画面（AI同意後）、ログイン画面（Loginリンク）、利用規約画面（実装済み）、プライバシーポリシー画面（実装済み）
 
 ### オンボーディング画面
 - **概要**: AI処理同意後に表示する3スライドのチュートリアル画面。Emoffのコンセプト・使い方・安心感を伝える
 - **ファイル**: `lib/screens/onboarding_screen.dart`
-- **設計書**: `plans/in_progress/20260403_registration_screen_design.md`（Part 3）
+- **設計書**: `plans/completed/20260403_registration_screen_design.md`（Part 3）
 - **主な仕様**:
   - `PageView` による3スライド横スワイプ切り替え
   - スライド1「感情を抜く、新しいコミュニケーション」: 吹き出し + フィルターアイコン
@@ -126,7 +138,7 @@
 ### ホーム画面（友達一覧）
 - **概要**: 友達登録済みのユーザー一覧を表示するメイン画面。「Circle of Clarity（明晰さの輪）」コンセプト
 - **ファイル**: `lib/screens/home_screen.dart`
-- **設計書**: `plans/in_progress/20260403_home_friends_screen_design.md`
+- **設計書**: `plans/completed/20260403_home_friends_screen_design.md`
 - **主な仕様**:
   - AppBar: ハンバーガーメニュー（左）、「FRIENDS」タイトル（大文字・レタースペーシング広め）、友達追加アイコン（右①）、検索アイコン（右②）
   - ヒーローセクション: 「Circle of Clarity」極太タイトル（36px, ExtraBold）+ サブテキスト
@@ -137,12 +149,12 @@
   - FAB: シアン背景（`#00D4FF`）の+ボタン（右下固定）→ 友達申請画面へ遷移
   - データ取得: `users/{uid}/friends` サブコレクションをStreamBuilderでリアルタイム監視
   - iPhone SE対応: CustomScrollView + SliverList によるスクロール構成
-- **遷移先**: 友達プロフィール画面（実装済み）、友達申請画面（実装済み）、友達申請管理画面（実装済み）、サイドドロワー（未実装）
+- **遷移先**: 友達プロフィール画面（実装済み）、友達申請画面（実装済み）、友達申請管理画面（実装済み）、サイドドロワー（実装済み）
 
 ### トーク一覧画面（Communication Hub）
 - **概要**: 過去のトーク履歴を新着順に一覧表示する画面。個別チャットとグループチャットを統合的に表示
 - **ファイル**: `lib/screens/talk_list_screen.dart`
-- **設計書**: `plans/in_progress/20260403_talk_list_screen_design.md`
+- **設計書**: `plans/completed/20260403_talk_list_screen_design.md`
 - **主な仕様**:
   - AppBar: ハンバーガーメニュー（左）、「EMOFF」タイトル（大文字・ボールド・レタースペーシング広め）、検索アイコン（右①）、プロフィールアバター32×32px（右②）
   - セクションヘッダー: 「COMMUNICATION HUB」サブラベル（12px, `#A0A0A0`）+ 「Chats」極太タイトル（30px, ExtraBold）+ 「New Discussion」シアンカプセルボタン（右寄せ）
@@ -155,7 +167,7 @@
   - Empty State: チャットが0件の場合、AI Conciergeセクションを画面中央に表示
   - データ取得: `chats` コレクションを `where('members', arrayContains: uid).orderBy('lastMessageAt', descending: true)` で StreamBuilder リアルタイム監視
   - iPhone SE対応: CustomScrollView + SliverList によるスクロール構成
-- **遷移先**: トークルーム画面（実装済み）、グループ作成画面（実装済み、Freeプランはアップグレード促進ダイアログ）、プロフィール設定画面（未実装）、サイドドロワー（未実装）
+- **遷移先**: トークルーム画面（実装済み）、グループ作成画面（実装済み、Freeプランはアップグレード促進ダイアログ）、プロフィール設定画面（実装済み）、サイドドロワー（実装済み）
 
 ### 設定画面
 - **概要**: 各種設定項目の一覧を表示する画面。上部にユーザープロフィールのサマリー、中央に設定項目リスト、下部にログアウト・バージョン情報を配置
@@ -166,11 +178,11 @@
   - プロフィールサマリー: アバター96×96px（`#242424`背景、角丸円形）+ ユーザー名（ExtraBold, 24px）+ メールアドレス（`#A0A0A0`, 14px）+「Edit Profile」ボタン（`#242424`背景、シアンテキスト、角丸12px）
   - データ取得: `users/{uid}` を StreamBuilder でリアルタイム監視
   - CONFIGURATIONセクション: Notifications（`chevron_right`）/ Account Settings（`chevron_right`）/ Announcements（`chevron_right`）
-  - LEGAL & PRIVACYセクション: Privacy Policy（`open_in_new`）/ Terms of Service（`open_in_new`）
+  - LEGAL & PRIVACYセクション: Privacy Policy（`chevron_right`）/ Terms of Service（`chevron_right`）
   - ログアウトボタン: CustomButton（danger, 高さ44px）+「Logout of Session」、確認ダイアログ（`showCustomConfirmDialog`）→ `AuthService.signOut()` → ログイン画面へ `pushAndRemoveUntil`
   - バージョン情報: 「VERSION 1.0.0 • EMOFF STOIC」（`#555555`, 10px, レタースペーシング広め）
   - iPhone SE対応: `SingleChildScrollView` によるスクロール構成
-- **遷移先**: プロフィール設定画面（実装済み）、通知設定画面（未実装）、アカウント設定画面（未実装）、お知らせ画面（未実装）、プライバシーポリシー画面（未実装）、利用規約画面（未実装）、ログイン画面（ログアウト時）
+- **遷移先**: プロフィール設定画面（実装済み）、通知設定画面（実装済み）、アカウント設定画面（実装済み）、お知らせ画面（実装済み）、プライバシーポリシー画面（実装済み）、利用規約画面（実装済み）、ログイン画面（ログアウト時）
 
 ### トークルーム画面
 - **概要**: 個別チャット画面。メッセージの送受信をリアルタイムで行う。Emoffの核心機能であるAIトーン中立化がこの画面で動作する
@@ -316,6 +328,118 @@
 - **遷移元**: 設定画面（Edit Profileボタン）
 - **遷移先**: 設定画面（保存完了後 / 破棄後 pop）
 
+### アカウント設定画面（Account Settings）
+- **概要**: メールアドレス変更・パスワード変更・ログアウト・アカウント削除を行う画面。設定画面の「Account Settings」から遷移。ACCOUNTセクション（日常的な変更操作）とDANGER ZONEセクション（破壊的操作）を視覚的に分離
+- **ファイル**: `lib/screens/account_settings_screen.dart`
+- **設計書**: `plans/completed/20260403_account_settings_screen_design.md`
+- **主な仕様**:
+  - CustomAppBar（戻るボタン付き、「Account Settings」タイトル、ボールド20px）
+  - ACCOUNTセクション: 「ACCOUNT」大文字ラベル（10px、`#A0A0A0`、レタースペーシング広め）
+    - Email Address: 現在のメールアドレスをサブテキストで表示 + `chevron_right`。タップでメールアドレス変更ダイアログ
+    - Password: 「••••••••」固定サブテキスト + `chevron_right`。タップでパスワード変更ダイアログ
+  - DANGER ZONEセクション: 「DANGER ZONE」大文字ラベル（10px、`#FF4D4D`赤色）、上マージン48pxで視覚的分離
+    - Logout: `logout`アイコン。タップでログアウト確認ダイアログ（`logout`アイコン48px赤+「ログアウトしますか？」+キャンセル/ログアウト横並び）
+    - Delete Account: テキスト・`delete_forever`アイコン共に`#FF4D4D`赤色。タップでアカウント削除2段階フロー
+  - メールアドレス変更ダイアログ: 現在メール表示 + 新メール入力（CustomTextField）+ パスワード入力（表示/非表示トグル）+ キャンセル/変更横並び。再認証（`reauthenticateWithCredential`）→ `verifyBeforeUpdateEmail` → Firestore `email`更新 → 完了ダイアログ（確認メール送信案内）
+  - パスワード変更ダイアログ: 現在パスワード + 新パスワード + 確認の3フィールド（全て表示/非表示トグル）。バリデーション（空欄・6文字未満・不一致）。再認証 → `updatePassword` → 完了ダイアログ
+  - アカウント削除フロー:
+    - ステップ1 警告ダイアログ: `warning_amber`アイコン48px赤 + 影響4点箇条書き（メッセージ削除・友達解除・グループ退出・取消不可）+ キャンセル/削除に進む横並び
+    - ステップ2 パスワード再入力ダイアログ: 「本人確認」+ パスワード入力 + キャンセル/アカウントを削除横並び。再認証 → Firestore `users/{uid}`削除 → Firebase Auth ユーザー削除 → ログイン画面遷移（`pushAndRemoveUntil`）
+  - 全ダイアログでローディング表示（CustomLoadingIndicator）、ボタン非活性化、`toUserFriendlyError`エラー変換
+  - アイテム共通: パディング上下16px左右24px、区切り線1px `#1A1A1A`
+  - 関連データクリーンアップ（友達リスト・チャットメンバー・申請の削除）はCloud Functions実装時のTODO
+- **遷移元**: 設定画面（Account Settingsアイテムタップ）
+- **遷移先**: ログイン画面（ログアウト成功時 / アカウント削除成功時、pushAndRemoveUntil）
+
+### 通知設定画面（Notifications）
+- **概要**: プッシュ通知のON/OFFおよび通知種別ごとの設定を行う画面。設定画面の「Notifications」から遷移。メイントグル（マスタースイッチ）で全通知を一括制御し、個別の通知種別ごとにON/OFFを切り替え可能
+- **ファイル**: `lib/screens/notification_settings_screen.dart`
+- **設計書**: `plans/completed/20260403_notification_settings_screen_design.md`
+- **主な仕様**:
+  - CustomAppBar（戻るボタン付き、「Notifications」タイトル）
+  - メイントグル（Push Notifications）: 全通知の一括ON/OFF。Switch（ON: シアン`#00D4FF`、OFF: `#555555`）。サブテキスト「全ての通知を一括で管理」（14px、`#A0A0A0`）。下部に全幅区切り線（`#242424`）
+  - マスタースイッチOFF時: 個別設定をopacity 0.4で非活性化し操作不可
+  - NOTIFICATION TYPESセクション: 「NOTIFICATION TYPES」大文字ラベル（10px、`#A0A0A0`、レタースペーシング広め）
+    - Messages: 「新しいメッセージを受信したとき」
+    - Friend Requests: 「友達申請を受け取ったとき」
+    - Announcements: 「アプリからのお知らせ」
+  - 各アイテム: ラベル（18px、`#FFFFFF`）+ サブテキスト（14px、`#A0A0A0`）+ Switch。パディング上下16px左右24px。アイテム間区切り線（1px、`#1A1A1A`、左右24px）
+  - 注意テキスト: 「通知が届かない場合は、端末の設定からEmoffの通知を許可してください」（12px、`#555555`、中央寄せ、上マージン32px）
+  - データ保存: SharedPreferences（`notification_enabled` / `notification_messages` / `notification_friend_requests` / `notification_announcements`、全てbool、デフォルトtrue）。トグル操作と同時に即時保存
+  - FCM連携: R-10決定後にTODO。現時点ではUI層（トグル操作+SharedPreferences保存）のみ
+- **遷移元**: 設定画面（Notificationsアイテムタップ）
+- **遷移先**: 設定画面（戻るボタン pop）
+
+### お知らせ画面（Announcements）
+- **概要**: アプリからのアップデート情報・システム通知を時系列で一覧表示する画面。設定画面の「Announcements」から遷移。管理者がFirebaseコンソールから投稿した `announcements` コレクションのデータをカード形式で表示
+- **ファイル**: `lib/screens/announcements_screen.dart`
+- **設計書**: `plans/completed/20260403_announcements_screen_design.md`
+- **主な仕様**:
+  - CustomAppBar（戻るボタン付き、「Announcements」タイトル）
+  - お知らせカード: `#1A1A1A`背景、角丸12px、パディング16px、左右マージン16px、カード間マージン12px
+    - タイトル: ボールド16px、`#FFFFFF`
+    - 日付: 12px、`#A0A0A0`、「YYYY年M月D日」形式
+    - 本文: 14px、`#A0A0A0`、最大3行で `overflow: ellipsis`
+  - 展開/折りたたみ: 本文3行超で「もっと見る」（`#00D4FF`、12px）を表示。タップで全文展開→「閉じる」に切替。`AnimatedSize` でスムーズ展開
+  - データ取得: `announcements` コレクション、`orderBy('createdAt', desc)`、ワンショット取得（`.get()`）
+  - プルトゥリフレッシュ: `RefreshIndicator` でデータ再取得
+  - 空状態: `notifications_none` アイコン（64px、`#555555`）+ 「お知らせはありません」テキスト（16px、`#555555`）
+  - ローディング: `CustomLoadingIndicator`（画面中央）
+  - エラー時: `showCustomDialog` でエラーダイアログ表示
+- **遷移元**: 設定画面（Announcementsアイテムタップ）
+- **遷移先**: 設定画面（戻るボタン pop）
+
+### プライバシーポリシー画面 / 利用規約画面（LegalDocumentScreen）
+- **概要**: プライバシーポリシーまたは利用規約の全文をマークダウンレンダリングで表示する共通画面。`title` と `assetPath` のパラメータで切り替えて再利用する
+- **ファイル**: `lib/screens/legal_document_screen.dart`
+- **設計書**: `plans/completed/20260403_privacy_policy_screen_design.md` / `plans/completed/20260403_terms_of_service_screen_design.md`
+- **主な仕様**:
+  - CustomAppBar（戻るボタン付き、タイトルはパラメータで「Privacy Policy」/「Terms of Service」を切替）
+  - データソース: `assets/privacy_policy.md` / `assets/terms_of_service.md` をアプリ内にバンドル。`rootBundle.loadString()` でワンショット読み込み
+  - マークダウンレンダリング: `flutter_markdown` パッケージの `MarkdownBody` を使用。テキスト選択可能（`selectable: true`）
+  - カスタムスタイルシート: h1（ボールド20px白）/ h2（ボールド18px白、上24px下8px）/ h3（ボールド16px白、上16px下4px）/ 本文（14px `#A0A0A0` 行高1.6）/ リスト（ビュレット色 `#555555`、インデント16px）/ リンク（`#00D4FF`、装飾なし）
+  - リンクタップ: `url_launcher` で外部ブラウザを起動（`LaunchMode.externalApplication`）
+  - ローディング: `CustomLoadingIndicator`（画面中央）
+  - エラー時: `showCustomDialog` でエラーダイアログ「コンテンツの読み込みに失敗しました」
+  - スクロール: `SingleChildScrollView`（パディング: 左右24px、上16px、下32px）
+- **遷移元**: 設定画面（Privacy Policy / Terms of Serviceアイテムタップ）、新規登録画面（リンクタップ）
+- **遷移先**: 前の画面（戻るボタン pop）
+
+### サイドドロワー（Side Drawer）
+- **概要**: ホーム画面・トーク一覧画面のAppBar左端ハンバーガーメニューから開くサイドドロワー。ユーザープロフィールサマリー、現在のプラン表示とアップグレード導線、ナビゲーションリンクを提供する共通ウィジェット
+- **ファイル**: `lib/widgets/custom_drawer.dart`
+- **設計書**: `plans/completed/20260403_side_drawer_design.md`
+- **主な仕様**:
+  - ドロワー幅: 画面幅の75%（最大280px）、`#0D0D0D`背景、右上・右下16px角丸
+  - ヘッダー（`#1A1A1A`背景）: アバター64×64px（円形、未設定時イニシャル）+ ユーザー名（ボールド18px Manrope）+ @userId（14px `#A0A0A0`）+ プランバッジ（FREE: `#242424`背景`#A0A0A0`テキスト / PRO: `#00D4FF`背景黒テキスト / BIZ: `#7EEEFF`背景黒テキスト、角丸8px 10px ボールド）。アバタータップでプロフィール設定画面へ遷移
+  - プランセクション（Freeユーザーのみ）: `#242424`背景角丸12px、`rocket_launch`アイコン+「Upgrade to Pro」タイトル+「Unlock unlimited messages & group chats」説明+「View Plans」カプセルボタン（シアン背景）
+  - ナビゲーションリスト3項目: Subscription（`credit_card`、Pro/Bizは現在プラン名バッジ）/ Announcements（`campaign`、未読件数バッジ付き）/ Settings（`settings`、ボトムナビ設定タブへ切替）。アイテム: 16px `#FFFFFF`テキスト、24px `#A0A0A0`アイコン、タップ背景`#242424`、角丸8px、パディング上下14px左右16px
+  - 未読バッジ: SharedPreferencesで最終閲覧日時を保存し、Firestoreのannouncements.createdAtと比較してカウント表示
+  - フッター: 区切り線（1px `#242424`）+「EMOFF v1.0.0」（大文字10px `#555555` レタースペーシング広め、中央寄せ）
+  - データ取得: `users/{uid}` を StreamBuilder でリアルタイム監視
+  - `onSwitchToSettings` コールバックでMainShellのボトムナビ設定タブに切替
+- **利用元**: ホーム画面（実装済み）、トーク一覧画面（実装済み）
+- **遷移先**: プロフィール設定画面（アバタータップ）、サブスクリプション画面（実装済み）、お知らせ画面（実装済み）、設定タブ切替
+
+### サブスクリプション画面（Choose Your Clarity）
+- **概要**: プラン一覧の表示・比較・購入・管理を行う画面。Free ユーザーにはアップグレード訴求、Pro/Business ユーザーには現在のプラン管理を提供。RevenueCat SDK によるアプリ内課金フローを統合
+- **ファイル**: `lib/screens/subscription_screen.dart`
+- **設計書**: `plans/completed/20260403_subscription_screen_design.md`
+- **主な仕様**:
+  - CustomAppBar（戻るボタン付き、「Subscription」タイトル）
+  - ヒーローセクション: 「CHOOSE YOUR CLARITY」サブラベル（大文字12px レタースペーシング広め `#A0A0A0`）+「Plans」極太タイトル（32px ExtraBold Manrope）+ 説明テキスト
+  - 現在プランバナー（Pro/Businessのみ）: `#1A1A1A`背景角丸12px、「CURRENT PLAN」シアンラベル + プラン名 + 次回請求日 +「Manage Subscription」リンク（OS管理画面を開く）
+  - Freeプランカード: `#1A1A1A`背景角丸16px、ボーダー1px `#242424`。¥0 forever。機能4行（check×2 + close×2 打消線）。Freeユーザーは「Current Plan」非活性ボタン
+  - Personal Proプランカード（RECOMMENDED）: シアンボーダー2px強調。RECOMMENDEDバッジ（`#00D4FF`背景黒テキスト角丸12px）。¥300/month シアン色。機能4行（全checkシアン色）。Freeユーザー向け「Upgrade to Pro」ボタン（primary）、Proユーザーは「Current Plan」非活性
+  - Businessプランカード（Coming Soon）: opacity 60%グレーアウト。COMING SOONバッジ（`#242424`背景）。¥600/user/month。機能4行テキスト色`#555555`。ボタン非表示（MVP選択不可）
+  - 注釈セクション: 自動更新・キャンセル説明（12px `#555555`）+ 利用規約/プライバシーポリシーリンク横並び（`#00D4FF` 下線付き）+「Restore Purchases」リンク（14px `#00D4FF` 中央寄せ）
+  - 購入フロー: RevenueCat SDK `Purchases.purchase()` → OS課金シート → 成功: check_circleアイコン緑+「アップグレード完了」CustomDialog → Firestore plan更新 / キャンセル: 何もしない / 失敗: errorアイコン赤+エラーメッセージCustomDialog
+  - 購入復元:「Restore Purchases」→ RevenueCat `restorePurchases()` → 復元成功/該当なしダイアログ
+  - プラン判定: Firestore `users/{uid}.plan` + RevenueCat `customerInfo` の両方を参照（RevenueCatが最新）
+  - データ取得: Firestore `users/{uid}` ワンショット + RevenueCat `getCustomerInfo()` + `getOfferings()`
+- **遷移元**: サイドドロワー「View Plans」ボタン（Free）、サイドドロワー「Subscription」ナビアイテム（全ユーザー）、トークルーム Free上限到達ダイアログ「Proプランにアップグレード」、トークルーム インプットドックロック「Proプランで無制限に →」、トーク一覧 グループ作成Freeダイアログ「プランを見る」
+- **遷移先**: 利用規約画面、プライバシーポリシー画面、OS課金シート、OSサブスクリプション管理画面
+
 ### ボトムナビゲーション（メインシェル）
 - **概要**: 認証後のメイン画面。ホーム・トーク・設定の3タブをボトムナビゲーションで切り替える
 - **ファイル**: `lib/screens/main_shell.dart`
@@ -357,6 +481,17 @@
   - `getOtherUser()` — 1対1チャットの相手ユーザー情報取得
   - `currentUid` — 現在のユーザーUID取得
 
+### RevenueCatService（課金サービス）
+- **概要**: RevenueCat SDK のラッパーサービス。アプリ内サブスクリプションの初期化・購入・復元・プラン判定を担う
+- **ファイル**: `lib/services/revenue_cat_service.dart`
+- **提供メソッド**:
+  - `init()` — RevenueCat SDKの初期化（UID紐付け）。スプラッシュ画面・ログイン・新規登録の認証成功後に呼び出し
+  - `getCurrentPlan()` — 現在のプラン取得（`pro` / `free`）
+  - `getCustomerInfo()` — RevenueCat CustomerInfo取得
+  - `getOfferings()` — 利用可能なOfferings（プラン一覧）取得
+  - `purchase()` — パッケージ購入実行
+  - `restorePurchases()` — 購入履歴の復元
+
 ---
 
 ## 実装済み共通ウィジェット
@@ -369,3 +504,4 @@
 | `CustomTextField` | `lib/widgets/custom_text_field.dart` | テキスト入力。角丸16px・ダーク背景・シアン枠線。`prefixIcon`・`suffixIcon`・`focusNode`・`inputFormatters`・`minLines` 対応 |
 | `CustomAppBar` | `lib/widgets/custom_app_bar.dart` | AppBar。黒背景・シアンアクセント |
 | `CustomLoadingIndicator` | `lib/widgets/custom_loading_indicator.dart` | ローディングスピナー。シアン色の回転インジケーター |
+| `CustomDrawer` | `lib/widgets/custom_drawer.dart` | サイドドロワー。プロフィールサマリー・プランバッジ・アップグレード促進・ナビリスト（Subscription/Announcements/Settings）・未読バッジ。`onSwitchToSettings` コールバック |
