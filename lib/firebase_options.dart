@@ -60,7 +60,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyDPI8J7VCclU-HELTieZ48GSFFbvZbCAag',
-    appId: '1:413054625629:ios:ee53d6ede218cede4aeab4',
+    appId: '1:413054625629:ios:b75559610e206e844aeab4',
     messagingSenderId: '413054625629',
     projectId: 'emoff-e82a4',
     storageBucket: 'emoff-e82a4.firebasestorage.app',
@@ -69,7 +69,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyDPI8J7VCclU-HELTieZ48GSFFbvZbCAag',
-    appId: '1:413054625629:ios:ee53d6ede218cede4aeab4',
+    appId: '1:413054625629:ios:b75559610e206e844aeab4',
     messagingSenderId: '413054625629',
     projectId: 'emoff-e82a4',
     storageBucket: 'emoff-e82a4.firebasestorage.app',

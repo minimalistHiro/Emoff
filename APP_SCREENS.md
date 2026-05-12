@@ -1,6 +1,6 @@
 # APP_SCREENS.md
 
-> 最終更新: 2026-04-09（サブスクリプション画面実装完了）
+> 最終更新: 2026-04-11（通報機能共通化・友達プロフィール画面通報対応）
 
 **このファイルには実装済みの画面・コンポーネントのみを記載する。** 未実装の画面は IMPLEMENTATION_PROGRESS.md / DESIGN_PROGRESS.md で管理する。
 
@@ -251,7 +251,7 @@
 - **設計書**: `plans/completed/20260403_friend_profile_screen_design.md`
 - **主な仕様**:
   - 透過AppBar: `extendBodyBehindAppBar: true`。戻るアイコン + メニューアイコン（共にドロップシャドウ付き白色、背景画像上の視認性確保）
-  - ポップアップメニュー: 「ブロック」（`block`アイコン、`#FF4D4D`赤テキスト）/ 「通報」（`flag`アイコン、`#A0A0A0`、準備中ダイアログ）。`#242424`背景、角丸12px
+  - ポップアップメニュー: 「ブロック」（`block`アイコン、`#FF4D4D`赤テキスト）/ 「通報」（`flag`アイコン、`#A0A0A0`、通報ボトムシート表示）。`#242424`背景、角丸12px
   - 背景画像エリア: 全幅240px、`users.backgroundUrl` を `BoxFit.cover` で表示。未設定時はグラデーション（`#1A1A1A` → `#242424`）。下部に黒半透明グラデーションオーバーレイ
   - プロフィールアイコン: 96×96px円形、白ボーダー2px、ドロップシャドウ。背景画像の下端から半分はみ出す配置（Stack + Positioned）。未設定時は`person`アイコン + `#1A1A1A`背景
   - ユーザー情報: ユーザー名（ボールド24px、中央寄せ）+ @userId（14px、`#A0A0A0`）+ 区切り線（`#242424`、bio存在時のみ）+ 自己紹介文（14px、`#A0A0A0`、最大5行、中央寄せ）。左右パディング32px
@@ -293,7 +293,7 @@
   - CustomAppBar（戻るボタン付き、「Group Settings」タイトル、セミボールド）
   - グループ情報セクション: 96×96pxグループアイコン（`groups`アイコン、作成者のみカメラオーバーレイ`#00D4FF`背景）+グループ名（ボールド22px、作成者のみ`edit`アイコン16px付き）+メンバー数（「N members」形式、14px、`#A0A0A0`）。中央寄せColumn、上下パディング32/24px、下部1px区切り線
   - グループ名インライン編集（作成者のみ）: editアイコンタップでCustomTextField+check/closeアイコン切替。50文字上限カウンター付き。確定→Firestore `groupName`更新、キャンセル→変更破棄
-  - 画像選択ボトムシート（作成者のみ）: 「写真を撮る」/「ギャラリーから選択」/「キャンセル」。`#242424`背景、角丸上部24px、ハンドルバー付き（MVPはTODO）
+  - 画像選択ボトムシート（作成者のみ）: 「写真を撮る」/「ギャラリーから選択」/「アイコンを削除」（設定済みの場合のみ、`#FF4D4D`）/「キャンセル」。`#242424`背景、角丸上部24px、ハンドルバー付き。`image_picker`で画像取得→`image_cropper`で1:1クロップ→Firebase Storage（`chats/{chatId}/groupIcon.jpg`）にアップロード→Firestore `groupIconUrl`更新。アップロード中はアイコン上に半透明黒オーバーレイ+ローディングインジケーター表示。アイコン削除時は確認ダイアログ表示→Storage削除→Firestoreフィールド削除
   - MEMBERSセクション: 「MEMBERS」大文字ラベル（12px、レタースペーシング広め）+ メンバー数シアン表示
   - メンバー追加ボタン: `person_add`アイコン24px+`#242424`背景48px円形+「メンバーを追加」シアンテキスト。最上部に配置
   - メンバーリスト: 48×48pxアバター（グレースケール20%）+ 名前（ボールド16px）+ @userId（13px）+ OWNERバッジ（`#00D4FF`背景・黒テキスト・カプセル型9px）+ YOUバッジ（`#242424`背景・`#A0A0A0`テキスト）+ 削除ボタン（`remove_circle_outline`、`#FF4D4D`、作成者のみ表示・自分自身には非表示）。ソート順: 作成者→自分→名前昇順
@@ -505,3 +505,4 @@
 | `CustomAppBar` | `lib/widgets/custom_app_bar.dart` | AppBar。黒背景・シアンアクセント |
 | `CustomLoadingIndicator` | `lib/widgets/custom_loading_indicator.dart` | ローディングスピナー。シアン色の回転インジケーター |
 | `CustomDrawer` | `lib/widgets/custom_drawer.dart` | サイドドロワー。プロフィールサマリー・プランバッジ・アップグレード促進・ナビリスト（Subscription/Announcements/Settings）・未読バッジ。`onSwitchToSettings` コールバック |
+| `ReportBottomSheet` | `lib/widgets/report_bottom_sheet.dart` | 通報ボトムシート。`showReportSheet()` 関数で表示。理由4択（スパム/嫌がらせ/不適切コンテンツ/その他）+ 補足入力 + Firestore reports保存 + 完了ダイアログ。トークルーム・友達プロフィール等から共通利用 |

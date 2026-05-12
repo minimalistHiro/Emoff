@@ -6,6 +6,7 @@ import '../widgets/custom_button.dart';
 import '../widgets/custom_dialog.dart';
 import '../widgets/custom_dialog_helper.dart';
 import '../widgets/custom_loading_indicator.dart';
+import '../widgets/report_bottom_sheet.dart';
 import 'talk_room_screen.dart';
 
 class FriendProfileScreen extends StatefulWidget {
@@ -146,10 +147,9 @@ class _FriendProfileScreenState extends State<FriendProfileScreen> {
             if (value == 'block') {
               _showBlockDialog(friendName);
             } else if (value == 'report') {
-              showCustomDialog(
+              showReportSheet(
                 context,
-                title: 'お知らせ',
-                message: '通報機能は準備中です',
+                targetUid: widget.friendUid,
               );
             }
           },

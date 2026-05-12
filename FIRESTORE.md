@@ -1,6 +1,6 @@
 # FIRESTORE.md
 
-> 最終更新: 2026-04-03
+> 最終更新: 2026-04-13
 
 ## リージョン
 
@@ -178,7 +178,7 @@
 | `createdAt` | timestamp | ○ | 通報日時 |
 
 **備考:**
-- 通報操作の導線: トークルーム画面のメニューまたはメッセージ長押しから
+- 通報操作の導線: トークルーム画面のメニュー、メッセージ長押し、友達プロフィール画面のメニューから
 - 初期はFirebaseコンソールで管理者が確認・対応。管理画面は後日検討
 - 通報者自身の通報のみ作成可能（セキュリティルールで制御）
 - 通報内容は通報者以外に公開しない
@@ -311,6 +311,16 @@ service cloud.firestore {
 |--------|--------|---------------|
 | `users/{uid}` | `users/*/friends/{uid}` | `name`, `iconUrl` |
 | `users/{uid}` | `friend_requests` (fromUid一致) | `fromName`, `fromIconUrl` |
+
+### サブスクリプション状態の同期（RevenueCat Webhook）
+- Cloud Functions `revenueCatWebhook`（HTTPSエンドポイント）でRevenueCatからのWebhookを受信し、`users/{uid}.plan` / `planExpiresAt` を更新
+- 対応イベント:
+  - `INITIAL_PURCHASE` / `RENEWAL` / `UNCANCELLATION` / `SUBSCRIPTION_EXTENDED` → `plan: "pro"` + `planExpiresAt` 更新
+  - `EXPIRATION` → `plan: "free"` + `planExpiresAt: null`
+  - `CANCELLATION` → `planExpiresAt` のみ更新（期限まではpro維持）
+  - `BILLING_ISSUE` → ログのみ（RevenueCatがGrace Period管理）
+- 認証: `REVENUECAT_WEBHOOK_AUTH_KEY` シークレットによるBearer認証
+- 実装: `functions/src/index.ts` / リージョン: `asia-northeast1`
 
 ### アカウント削除時の処理
 - Cloud Functionsで以下を実行:

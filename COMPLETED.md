@@ -13,6 +13,30 @@
 
 ---
 
+## 2026-04-13
+
+| ID | 優先度 | 内容 | 状態 |
+|---|---|---|---|
+| A-27 | 中 | RevenueCat Webhook受信用Cloud Functions実装（Webhook → Firestore `users/{uid}.plan` / `planExpiresAt` 更新） — onRequest関数でBearer認証・イベント種別判定・Firestore更新を実装。INITIAL_PURCHASE/RENEWAL/UNCANCELLATION/SUBSCRIPTION_EXTENDED→pro、EXPIRATION→free、CANCELLATION→planExpiresAt更新、BILLING_ISSUE→ログのみ | [x] 完了（2026-04-13） |
+
+---
+
+## 2026-04-12
+
+| ID | 優先度 | 内容 | 状態 |
+|---|---|---|---|
+| A-24 | 中 | グループアイコンの画像選択・アップロード機能実装（group_management_screen.dartの画像選択ボトムシートTODOを実装） — image_picker + image_cropperで画像選択・1:1クロップ、Firebase Storageへアップロード、Firestore groupIconUrl更新、アイコン削除機能追加 | [x] 完了（2026-04-12） |
+
+---
+
+## 2026-04-11
+
+| ID | 優先度 | 内容 | 状態 |
+|---|---|---|---|
+| A-13 | 高 | 通報機能の実装（reportsコレクション、通報理由選択UI） — 通報ボトムシートを共通ウィジェット化（report_bottom_sheet.dart）、friend_profile_screen.dartのプレースホルダーを実機能に置き換え、talk_room_screen.dartも共通ウィジェットに統合 | [x] 完了（2026-04-11） |
+
+---
+
 ## 2026-04-10
 
 | ID | 優先度 | 内容 | 状態 |

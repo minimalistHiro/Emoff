@@ -1,6 +1,11 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_dialog.dart';
@@ -24,6 +29,8 @@ class GroupManagementScreen extends StatefulWidget {
 class _GroupManagementScreenState extends State<GroupManagementScreen> {
   final _firestore = FirebaseFirestore.instance;
   final _auth = FirebaseAuth.instance;
+  final _storage = FirebaseStorage.instance;
+  final _imagePicker = ImagePicker();
 
   static const _backgroundColor = Color(0xFF0D0D0D);
   static const _cardColor = Color(0xFF1A1A1A);
@@ -37,6 +44,9 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
   // グループ名インライン編集
   bool _isEditingName = false;
   final _nameEditController = TextEditingController();
+
+  // アイコンアップロード中
+  bool _isUploadingIcon = false;
 
   // メンバー情報キャッシュ: uid -> {name, userId, iconUrl}
   final Map<String, Map<String, dynamic>> _memberCache = {};
@@ -180,7 +190,7 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
         children: [
           // グループアイコン
           GestureDetector(
-            onTap: isOwner ? _onChangeGroupIcon : null,
+            onTap: isOwner && !_isUploadingIcon ? _onChangeGroupIcon : null,
             child: SizedBox(
               width: 96,
               height: 96,
@@ -204,8 +214,21 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
                         ? const Icon(Icons.groups, size: 40, color: _textSecondary)
                         : null,
                   ),
+                  // アップロード中オーバーレイ
+                  if (_isUploadingIcon)
+                    Container(
+                      width: 96,
+                      height: 96,
+                      decoration: const BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Color(0x99000000),
+                      ),
+                      child: const Center(
+                        child: CustomLoadingIndicator(size: 32),
+                      ),
+                    ),
                   // カメラオーバーレイ（作成者のみ）
-                  if (isOwner)
+                  if (isOwner && !_isUploadingIcon)
                     Positioned(
                       bottom: 0,
                       right: 0,
@@ -606,69 +629,79 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
 
   /// グループアイコン変更
   void _onChangeGroupIcon() {
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: _elevateColor,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      builder: (context) {
-        return SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 12),
-              // ハンドルバー
-              Container(
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: const Color(0xFF555555),
-                  borderRadius: BorderRadius.circular(100),
+    if (_isUploadingIcon) return;
+
+    // 現在のアイコンURLを取得（削除オプション表示判定用）
+    _firestore.collection('chats').doc(widget.chatId).get().then((doc) {
+      if (!mounted) return;
+      final data = doc.data();
+      final currentIconUrl = data?['groupIconUrl'] as String?;
+      final hasIcon = currentIconUrl != null && currentIconUrl.isNotEmpty;
+
+      showModalBottomSheet(
+        context: context,
+        backgroundColor: _elevateColor,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        builder: (context) {
+          return SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 12),
+                // ハンドルバー
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF555555),
+                    borderRadius: BorderRadius.circular(100),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              _iconSheetItem(
-                icon: Icons.camera_alt,
-                text: '写真を撮る',
-                color: _textPrimary,
-                onTap: () {
-                  Navigator.pop(context);
-                  // TODO: image_picker導入後に実装
-                  showCustomDialog(
-                    this.context,
-                    title: '準備中',
-                    message: 'カメラ機能は今後対応予定です。',
-                  );
-                },
-              ),
-              _iconSheetItem(
-                icon: Icons.photo_library,
-                text: 'ギャラリーから選択',
-                color: _textPrimary,
-                onTap: () {
-                  Navigator.pop(context);
-                  // TODO: image_picker導入後に実装
-                  showCustomDialog(
-                    this.context,
-                    title: '準備中',
-                    message: 'ギャラリー機能は今後対応予定です。',
-                  );
-                },
-              ),
-              // アイコン削除（設定済みの場合のみ） — MVPではアイコン未対応のため非表示
-              _iconSheetItem(
-                icon: Icons.close,
-                text: 'キャンセル',
-                color: _textSecondary,
-                onTap: () => Navigator.pop(context),
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        );
-      },
-    );
+                const SizedBox(height: 20),
+                _iconSheetItem(
+                  icon: Icons.camera_alt,
+                  text: '写真を撮る',
+                  color: _textPrimary,
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickGroupIcon(ImageSource.camera);
+                  },
+                ),
+                _iconSheetItem(
+                  icon: Icons.photo_library,
+                  text: 'ギャラリーから選択',
+                  color: _textPrimary,
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickGroupIcon(ImageSource.gallery);
+                  },
+                ),
+                // アイコン削除（設定済みの場合のみ）
+                if (hasIcon)
+                  _iconSheetItem(
+                    icon: Icons.delete_outline,
+                    text: 'アイコンを削除',
+                    color: _danger,
+                    onTap: () {
+                      Navigator.pop(context);
+                      _removeGroupIcon();
+                    },
+                  ),
+                _iconSheetItem(
+                  icon: Icons.close,
+                  text: 'キャンセル',
+                  color: _textSecondary,
+                  onTap: () => Navigator.pop(context),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          );
+        },
+      );
+    });
   }
 
   Widget _iconSheetItem({
@@ -682,6 +715,102 @@ class _GroupManagementScreenState extends State<GroupManagementScreen> {
       title: Text(text, style: TextStyle(color: color, fontSize: 16)),
       onTap: onTap,
     );
+  }
+
+  /// 画像を選択してクロップ → アップロード
+  Future<void> _pickGroupIcon(ImageSource source) async {
+    try {
+      final picked = await _imagePicker.pickImage(
+        source: source,
+        imageQuality: 85,
+      );
+      if (picked == null || !mounted) return;
+
+      final cropped = await ImageCropper().cropImage(
+        sourcePath: picked.path,
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+        compressQuality: 85,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: 'グループアイコン',
+            toolbarColor: _backgroundColor,
+            toolbarWidgetColor: _cyan,
+            backgroundColor: _backgroundColor,
+            activeControlsWidgetColor: _cyan,
+            lockAspectRatio: true,
+          ),
+          IOSUiSettings(
+            title: 'グループアイコン',
+            aspectRatioLockEnabled: true,
+          ),
+        ],
+      );
+
+      if (cropped == null || !mounted) return;
+
+      setState(() => _isUploadingIcon = true);
+
+      final ref = _storage
+          .ref()
+          .child('chats/${widget.chatId}/groupIcon.jpg');
+      await ref.putFile(File(cropped.path));
+      final downloadUrl = await ref.getDownloadURL();
+
+      await _firestore.collection('chats').doc(widget.chatId).update({
+        'groupIconUrl': downloadUrl,
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      if (!mounted) return;
+      setState(() => _isUploadingIcon = false);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isUploadingIcon = false);
+      showCustomDialog(
+        context,
+        title: 'エラー',
+        message: toUserFriendlyError(e),
+      );
+    }
+  }
+
+  /// グループアイコンを削除
+  Future<void> _removeGroupIcon() async {
+    final confirmed = await showCustomConfirmDialog(
+      context,
+      title: 'アイコンを削除しますか？',
+      message: 'グループアイコンをデフォルトに戻します。',
+    );
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _isUploadingIcon = true);
+
+    try {
+      // Storage上のファイルを削除
+      try {
+        await _storage
+            .ref()
+            .child('chats/${widget.chatId}/groupIcon.jpg')
+            .delete();
+      } catch (_) {}
+
+      // Firestoreを更新
+      await _firestore.collection('chats').doc(widget.chatId).update({
+        'groupIconUrl': FieldValue.delete(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+
+      if (!mounted) return;
+      setState(() => _isUploadingIcon = false);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isUploadingIcon = false);
+      showCustomDialog(
+        context,
+        title: 'エラー',
+        message: toUserFriendlyError(e),
+      );
+    }
   }
 
   /// グループ名編集確定

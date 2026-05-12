@@ -4,8 +4,12 @@ import {
   onDocumentUpdated,
   onDocumentCreated,
 } from "firebase-functions/v2/firestore";
+import { onRequest } from "firebase-functions/v2/https";
+import { defineSecret } from "firebase-functions/params";
 import { initializeApp } from "firebase-admin/app";
 import { getFirestore, FieldValue } from "firebase-admin/firestore";
+
+const revenueCatWebhookAuthKey = defineSecret("REVENUECAT_WEBHOOK_AUTH_KEY");
 
 initializeApp();
 
@@ -272,5 +276,151 @@ export const deleteExpiredOriginalTexts = onSchedule(
     console.log(
       `deleteExpiredOriginalTexts: ${totalUpdated} messages updated`
     );
+  }
+);
+
+/**
+ * RevenueCat Webhookを受信し、サブスクリプション状態に応じて
+ * Firestoreの users/{uid}.plan / planExpiresAt を更新する。
+ *
+ * 対応イベント:
+ * - INITIAL_PURCHASE / RENEWAL / UNCANCELLATION / SUBSCRIPTION_EXTENDED → plan: "pro"
+ * - EXPIRATION → plan: "free"（proエンタイトルメントが無い場合）
+ * - CANCELLATION → planExpiresAt のみ更新（期限まではpro維持）
+ * - BILLING_ISSUE → ログのみ（RevenueCatがリトライ管理）
+ *
+ * セットアップ:
+ * 1. firebase functions:secrets:set REVENUECAT_WEBHOOK_AUTH_KEY でシークレットを設定
+ * 2. RevenueCatダッシュボードのWebhook URLにデプロイ後のURLを設定
+ * 3. RevenueCatのAuthorization headerに同じキーを設定
+ */
+export const revenueCatWebhook = onRequest(
+  {
+    region: "asia-northeast1",
+    secrets: [revenueCatWebhookAuthKey],
+  },
+  async (req, res) => {
+    // POSTのみ許可
+    if (req.method !== "POST") {
+      res.status(405).send("Method Not Allowed");
+      return;
+    }
+
+    // Authorization headerの検証
+    const authHeader = req.headers.authorization;
+    const expectedKey = revenueCatWebhookAuthKey.value();
+    if (!authHeader || authHeader !== `Bearer ${expectedKey}`) {
+      console.warn("revenueCatWebhook: Unauthorized request");
+      res.status(401).send("Unauthorized");
+      return;
+    }
+
+    const event = req.body?.event;
+    if (!event) {
+      res.status(400).send("Missing event");
+      return;
+    }
+
+    const {
+      type,
+      app_user_id: uid,
+      entitlement_ids,
+      expiration_at_ms,
+    } = event;
+
+    if (!uid) {
+      console.warn("revenueCatWebhook: Missing app_user_id");
+      res.status(400).send("Missing app_user_id");
+      return;
+    }
+
+    // RevenueCat匿名IDはスキップ（Firebaseユーザーではない）
+    if (uid.startsWith("$RCAnonymousID:")) {
+      console.log(`revenueCatWebhook: Skipping anonymous user`);
+      res.status(200).send("OK");
+      return;
+    }
+
+    const db = getFirestore();
+    const userRef = db.doc(`users/${uid}`);
+
+    // ユーザー存在確認
+    const userDoc = await userRef.get();
+    if (!userDoc.exists) {
+      console.warn(`revenueCatWebhook: User ${uid} not found`);
+      // 200を返してRevenueCatのリトライを防止
+      res.status(200).send("OK");
+      return;
+    }
+
+    const hasPro = (entitlement_ids ?? []).includes("pro");
+
+    switch (type) {
+      // サブスクリプション開始・更新系 → proにアップグレード
+      case "INITIAL_PURCHASE":
+      case "RENEWAL":
+      case "UNCANCELLATION":
+      case "SUBSCRIPTION_EXTENDED": {
+        if (hasPro) {
+          const update: Record<string, unknown> = {
+            plan: "pro",
+            updatedAt: FieldValue.serverTimestamp(),
+          };
+          if (expiration_at_ms) {
+            update.planExpiresAt = new Date(expiration_at_ms);
+          }
+          await userRef.update(update);
+          console.log(
+            `revenueCatWebhook(${type}): ${uid} → pro` +
+              ` (expires: ${expiration_at_ms})`
+          );
+        }
+        break;
+      }
+
+      // サブスクリプション期限切れ → freeにダウングレード
+      case "EXPIRATION": {
+        if (!hasPro) {
+          await userRef.update({
+            plan: "free",
+            planExpiresAt: null,
+            updatedAt: FieldValue.serverTimestamp(),
+          });
+          console.log(`revenueCatWebhook(${type}): ${uid} → free`);
+        }
+        break;
+      }
+
+      // キャンセル → 期限日のみ更新（期限まではpro維持）
+      case "CANCELLATION": {
+        if (expiration_at_ms) {
+          await userRef.update({
+            planExpiresAt: new Date(expiration_at_ms),
+            updatedAt: FieldValue.serverTimestamp(),
+          });
+        }
+        console.log(
+          `revenueCatWebhook(${type}): ${uid}` +
+            ` (expires: ${expiration_at_ms})`
+        );
+        break;
+      }
+
+      // 請求問題 → ログのみ（RevenueCatがGrace Periodを管理）
+      case "BILLING_ISSUE": {
+        console.warn(
+          `revenueCatWebhook(${type}): ${uid} billing issue`
+        );
+        break;
+      }
+
+      default: {
+        console.log(
+          `revenueCatWebhook: Unhandled event type ${type} for ${uid}`
+        );
+      }
+    }
+
+    res.status(200).send("OK");
   }
 );
